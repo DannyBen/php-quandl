@@ -23,13 +23,13 @@
 	// $quandl->trim_end   = "today";
 	// $data = $quandl->getObject($symbol);
 
-	// Example 4: More parameters
+	// Example 4: XML + More parameters
 	// $quandl = new Quandl($api_key);
 	// $quandl->sort_order = "desc"; // asc|desc
 	// $quandl->exclude_headers = true;
 	// $quandl->rows = 10;
 	// $quandl->column = 4; // 4 = close price
-	// $data = $quandl->getCsv($symbol);
+	// $data = $quandl->getXml($symbol);
 
 	// Example 5: Frequency
 	// $quandl = new Quandl($api_key);
