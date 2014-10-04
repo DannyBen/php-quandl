@@ -71,6 +71,7 @@ class Quandl {
 	// Normally, you should use the getCsv, getJson or getXml.
 	public function getData($symbol=null, $format=null) {
 		$url = $this->getUrl($symbol, $format);
+		$this->was_cached = false;
 		if($this->cache_handler != null) {
 			$data = call_user_func($this->cache_handler, $url);
 			if($data)
@@ -112,7 +113,7 @@ class Quandl {
 		return $result;
 	}
 
-	// convertToQuandlDate Converts any time string supported by
+	// convertToQuandlDate converts any time string supported by
 	// PHP (e.g. "today-30 days") to the format needed by Quandl
 	private static function convertToQuandlDate($time_str) {
 		return date("Y-m-d", strtotime($time_str));
