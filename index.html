@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="PHP Quandl : Easy access to the Quandl Data API using PHP.">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>PHP Quandl</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/DannyBen/php-quandl">View on GitHub</a>
+
+          <h1 id="project_title">PHP Quandl</h1>
+          <h2 id="project_tagline">Easy access to the Quandl Data API using PHP.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/DannyBen/php-quandl/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/DannyBen/php-quandl/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="php-quandl" class="anchor" href="#php-quandl"><span class="octicon octicon-link"></span></a>PHP Quandl</h1>
+
+<p>This library provides easy access to the 
+<a href="https://www.quandl.com/help/api">Quandl API</a> 
+using PHP.</p>
+
+<h2>
+<a name="geting-started" class="anchor" href="#geting-started"><span class="octicon octicon-link"></span></a>Geting Started</h2>
+
+<p>Include the <code>Quandl.php</code> class in your code, and run one of 
+the examples. </p>
+
+<h2>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
+
+<p>This is used in all subsequent examples.</p>
+
+<pre><code>$api_key = "YOUR_KEY_HERE";
+$symbol  = "GOOG/NASDAQ_AAPL";
+</code></pre>
+
+<h3>
+<a name="example-1-hello-quandl" class="anchor" href="#example-1-hello-quandl"><span class="octicon octicon-link"></span></a>Example 1: Hello Quandl</h3>
+
+<p>The simplest request form, sent without any API key.</p>
+
+<pre><code>$quandl = new Quandl();
+$data = $quandl-&gt;getCsv($symbol);
+</code></pre>
+
+<h3>
+<a name="example-2-api-key--json" class="anchor" href="#example-2-api-key--json"><span class="octicon octicon-link"></span></a>Example 2: API Key + JSON</h3>
+
+<pre><code>$quandl = new Quandl($api_key);
+$data = $quandl-&gt;getJson($symbol);
+</code></pre>
+
+<h3>
+<a name="example-3-decoded-json--date-range" class="anchor" href="#example-3-decoded-json--date-range"><span class="octicon octicon-link"></span></a>Example 3: Decoded JSON + Date Range</h3>
+
+<p>Using the <code>trim_start</code> and <code>trim_end</code> properties, you may input any
+string that can be understood by PHP's <code>strtotime</code>. </p>
+
+<pre><code>$quandl = new Quandl($api_key);
+$quandl-&gt;trim_start = "today-30 days";
+$quandl-&gt;trim_end   = "today";
+$data = $quandl-&gt;getObject($symbol);
+</code></pre>
+
+<h3>
+<a name="example-4-xml--more-parameters" class="anchor" href="#example-4-xml--more-parameters"><span class="octicon octicon-link"></span></a>Example 4: XML + More parameters</h3>
+
+<p>You may assign any parameter in the Quandl documentation, using the 
+syntax <code>$quandl-&gt;param_name = value</code>.</p>
+
+<pre><code>$quandl = new Quandl($api_key);
+$quandl-&gt;sort_order = "desc"; // asc|desc
+$quandl-&gt;exclude_headers = true;
+$quandl-&gt;rows = 10;
+$quandl-&gt;column = 4; // 4 = close price
+$data = $quandl-&gt;getXml($symbol);
+</code></pre>
+
+<h3>
+<a name="example-5-frequency" class="anchor" href="#example-5-frequency"><span class="octicon octicon-link"></span></a>Example 5: Frequency</h3>
+
+<pre><code>$quandl = new Quandl($api_key);
+$quandl-&gt;collapse = "weekly"; // none|daily|weekly|monthly|quarterly|annual
+$data = $quandl-&gt;getCsv($symbol);
+</code></pre>
+
+<h3>
+<a name="example-6-transformation" class="anchor" href="#example-6-transformation"><span class="octicon octicon-link"></span></a>Example 6: Transformation</h3>
+
+<pre><code>$quandl = new Quandl($api_key);
+$quandl-&gt;transformation = "diff"; // none|diff|rdiff|cumul|normalize
+$data = $quandl-&gt;getCsv($symbol);
+</code></pre>
+
+<h3>
+<a name="example-7-constructor-options--multiple-symbols" class="anchor" href="#example-7-constructor-options--multiple-symbols"><span class="octicon octicon-link"></span></a>Example 7: Constructor Options + Multiple Symbols</h3>
+
+<p>The second parameter of the contructor is an optional array of options.
+Using this array is the equivalent of using the 
+<code>$quandl-&gt;parameter = value</code> syntax.</p>
+
+<p>In addition, all the methods that accept a symbol, also accept an array
+of symbols. Each symbol in the array may be written in the usual 
+slash notation (GOOG/NASDAQ_AAPL) or the dot notation (GOOG.NASDAQ_AAPL).</p>
+
+<pre><code>$quandl = new Quandl($api_key, ["rows"=&gt;30]);
+$data = $quandl-&gt;getData(["GOOG/NASDAQ_AAPL", "GOOG/NASDAQ_CSCO"]);
+</code></pre>
+
+<h3>
+<a name="example-8-multiple-symbols-with-column-selector" class="anchor" href="#example-8-multiple-symbols-with-column-selector"><span class="octicon octicon-link"></span></a>Example 8: Multiple Symbols with Column Selector</h3>
+
+<p>When using multiple symbols, you may append a column selector (exactly
+as described in the Quandl documentation) to select specific columns.</p>
+
+<pre><code>$quandl = new Quandl($api_key, ["rows"=&gt;30]);
+$data = $quandl-&gt;getData(["GOOG/NASDAQ_AAPL.4", "GOOG/NASDAQ_CSCO.4"]);
+</code></pre>
+
+<h3>
+<a name="example-9-search" class="anchor" href="#example-9-search"><span class="octicon octicon-link"></span></a>Example 9: Search</h3>
+
+<p>The search method receives a query, and two additional optional 
+parameters: Results per page, and page number.</p>
+
+<pre><code>$quandl = new Quandl($api_key);
+$data = $quandl-&gt;search("crude oil", 10, 2);
+</code></pre>
+
+<h3>
+<a name="example-10-metadata" class="anchor" href="#example-10-metadata"><span class="octicon octicon-link"></span></a>Example 10: Metadata</h3>
+
+<pre><code>$quandl = new Quandl($api_key);
+$quandl-&gt;exclude_data = true;
+$data = $quandl-&gt;getObject($symbol);
+</code></pre>
+
+<h2>
+<a name="caching" class="anchor" href="#caching"><span class="octicon octicon-link"></span></a>Caching</h2>
+
+<p>You may provide the <code>quandl</code> object with a cache handler function.
+This function should be responsible for both reading from your cache and storing to it. </p>
+
+<p>See the <code>example_cache.php</code> file.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">PHP Quandl maintained by <a href="https://github.com/DannyBen">DannyBen</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
