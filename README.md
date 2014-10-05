@@ -107,7 +107,7 @@ Caching
 -------
 
 You may provide the `quandl` object with a cache handler function.
-This function shuold be responsible for both reading from your cache and storing to it. 
+This function should be responsible for both reading from your cache and storing to it. 
 
 See the `example_cache.php` file.
 
