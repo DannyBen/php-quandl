@@ -10,7 +10,7 @@
 	$d = $quandl->getCsv("GOOG/NASDAQ_AAPL");
 	
 	// A simple example of a cache handler.
-	// This function will be called by the Quandle class.
+	// This function will be called by the Quandl class.
 	// When action == "get", you should return a cached
 	// object or false.
 	// When action == "set", you should perform the save 
