@@ -68,16 +68,27 @@ class Quandl {
 	}
 
 	// getData returns data in any format for a given symbol.
-	// Normally, you should use the getCsv, getJson or getXml.
+	// Normally, you should use the getCsv, getJson or getXml
+	// which will call getData.
+	// This function will get the data from the cache and save
+	// it to the cache, if a cache handler is set.
 	public function getData($symbol=null, $format=null) {
 		$url = $this->getUrl($symbol, $format);
 		$this->was_cached = false;
 		if($this->cache_handler != null) {
-			$data = call_user_func($this->cache_handler, $url);
-			if($data)
+			$data = call_user_func($this->cache_handler, "get", $url);
+			if($data) {
 				$this->was_cached = true;
+			}
+			else {
+				$data = file_get_contents($url);
+				call_user_func($this->cache_handler, "set", $url, $data);
+			}
 		}
-		$data or $data = file_get_contents($url);
+		else {
+			$data = file_get_contents($url);
+		}
+
 		return $data;
 	}
 

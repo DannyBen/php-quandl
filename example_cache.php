@@ -4,29 +4,23 @@
 	//--------------------------------------------------------------
 	require_once "Quandl.php";
 
-	$symbol  = "GOOG/NASDAQ_AAPL";
-
 	$quandl = new Quandl();
-	$quandl->cache_handler = cacheHandler;
-	$quandl->rows = 10;
-	$data = $quandl->getCsv($symbol);
+	$quandl->cache_handler = 'cacheHandler';
+	$quandl->rows=10;
+	$d = $quandl->getCsv("GOOG/NASDAQ_AAPL");
 	
-	// After calling any of the getData methods, the was_cached
-	// property will be true if your cache handler returned an 
-	// object. You may use this to store the returned object in
-	// your cache.
-	if(!$quandl->was_cached) {
-		$cache_key = md5($quandl->getUrl($symbol));
-		file_put_contents($cache_key, $data);
+	// A simple example of a cache handler.
+	// This function will be called by the Quandle class.
+	// When action == "get", you should return a cached
+	// object or false.
+	// When action == "set", you should perform the save 
+	// operation to your cache.
+	function cacheHandler($action, $url, $data=null) {
+		$cache_key = md5("quandl:$url");
+		if($action == "get" and file_exists($cache_key)) 
+			return file_get_contents($cache_key);
+		else if($action == "set") 
+			file_put_contents($cache_key, $data);
+		return false;
 	}
-
-	// Your cache handler should return an object or false
-	// if not in your cache
-	function cacheHandler($url) {
-		$cache_key = md5($url);
-		return file_exists($cache_key)
-			? file_get_contents($cache_key)
-			: false;
-	}
-
 ?>

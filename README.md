@@ -107,8 +107,7 @@ Caching
 -------
 
 You may provide the `quandl` object with a cache handler function.
-This function will receive a Quandl URL as its only parameter, and 
-will be responsible of returning either the cached object for that 
-URL, or false.
+This function shuold be responsible for both reading from your cache and storing to it. 
 
 See the `example_cache.php` file.
+
