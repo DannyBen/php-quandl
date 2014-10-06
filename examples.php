@@ -10,8 +10,8 @@
 	// UNCOMMENT ONE EXAMPLE AT A TIME
 
 	// Example 1: Hello World
-	$quandl = new Quandl();
-	$data = $quandl->getCsv($symbol);
+	// $quandl = new Quandl();
+	// $data = $quandl->getCsv($symbol);
 
 	// Example 2: API Key + JSON
 	// $quandl = new Quandl($api_key);
@@ -57,4 +57,12 @@
 	// $quandl = new Quandl($api_key);
 	// $quandl->exclude_data = true;
 	// $data = $quandl->getObject($symbol);
+
+	// Example 11: Symbol Lists
+	// $quandl = new Quandl($api_key);
+	// $data = $quandl->getList("WIKI");
+
+	// Example 12: Symbol Lists with Parameters
+	$quandl = new Quandl($api_key);
+	$data = $quandl->getList("WIKI", 100, 2, "json");
 ?>

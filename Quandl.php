@@ -13,6 +13,7 @@ class Quandl {
 
 	private static $base = "https://www.quandl.com/api/v1/datasets";
 	private static $base_multi = "https://quandl.com/api/v1/multisets";
+	private static $base_lists = "http://www.quandl.com/api/v2/datasets";
 	
 	// The constructor accepts an optional api_key and an 
 	// array of params. The params array may contain any key=>value
@@ -67,29 +68,18 @@ class Quandl {
 		return $this->getObject();
 	}
 
+	// 
+	public function getList($source, $per_page=300, $page=1, $format=null) {
+		$url = $this->getListUrl($source, $per_page, $page, $format);
+		return $this->executeDownload($url);
+	}
+
 	// getData returns data in any format for a given symbol.
 	// Normally, you should use the getCsv, getJson or getXml
 	// which will call getData.
-	// This function will get the data from the cache and save
-	// it to the cache, if a cache handler is set.
 	public function getData($symbol=null, $format=null) {
 		$url = $this->getUrl($symbol, $format);
-		$this->was_cached = false;
-		if($this->cache_handler != null) {
-			$data = call_user_func($this->cache_handler, "get", $url);
-			if($data) {
-				$this->was_cached = true;
-			}
-			else {
-				$data = file_get_contents($url);
-				call_user_func($this->cache_handler, "set", $url, $data);
-			}
-		}
-		else {
-			$data = file_get_contents($url);
-		}
-
-		return $data;
+		return $this->executeDownload($url);
 	}
 
 	// getUrl returns the complete URL for making a request to Quandl.
@@ -122,6 +112,44 @@ class Quandl {
 		$params and $result .= "?" . http_build_query($params);
 
 		return $result;
+	}
+
+	// getListUrl returns a URL to the list of symbols in a 
+	// given source
+	public function getListUrl($source, $per_page=300, $page=1, $format=null) {
+		$format or $format = $this->default_format;
+		$base = self::$base_lists;
+		$params = [
+			 "query"       => "*",
+			 "source_code" => $source,
+			 "per_page"    => $per_page,
+			 "page"        => $page,
+		];
+		$this->api_key and $params['auth_token'] = $this->api_key;
+		$params = http_build_query($params);
+		return "$base.$format?$params";
+	}
+
+	// executeDownload gets a URL, and returns the downloaded document
+	// If a cache_handler is set, it will call it to get a document 
+	// from it, and ask it to store the downloaded object where applicable.
+	private function executeDownload($url) {
+		$this->was_cached = false;
+		if($this->cache_handler != null) {
+			$data = call_user_func($this->cache_handler, "get", $url);
+			if($data) {
+				$this->was_cached = true;
+			}
+			else {
+				$data = file_get_contents($url);
+				call_user_func($this->cache_handler, "set", $url, $data);
+			}
+		}
+		else {
+			$data = file_get_contents($url);
+		}
+
+		return $data;
 	}
 
 	// convertToQuandlDate converts any time string supported by
