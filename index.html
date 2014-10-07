@@ -134,7 +134,7 @@ automatically appended.</p>
 <h3>
 <a name="getsymbols" class="anchor" href="#getsymbols"><span class="octicon octicon-link"></span></a>getSymbols</h3>
 
-<p><code>mixed getSymbols( array $symbol [, array $params ] )</code></p>
+<p><code>mixed getSymbols( array $symbols [, array $params ] )</code></p>
 
 <p>Same as <code>getSymbol()</code> only instead of a single symbol, it receives
 an array of multiple symbols. Each symbol in the array may be 
@@ -153,9 +153,9 @@ return only the close prices (column 4) of AAPL.</p>
 <p>Returns a search result object. Number of results per page is 
 limited to 300 by default.</p>
 
-<p>Note that currently Quandl does support CSV response for this node
-so if <code>$quandl-&gt;format</code> is "csv", this call will return a PHP objhect
-instead.</p>
+<p>Note that currently Quandl does not support CSV response for this 
+node so if <code>$quandl-&gt;format</code> is "csv", this call will return a PHP
+object instead.</p>
 
 <h3>
 <a name="getlist" class="anchor" href="#getlist"><span class="octicon octicon-link"></span></a>getList</h3>
