@@ -7,62 +7,74 @@
 	$api_key = "YOUR_KEY_HERE";
 	$symbol  = "GOOG/NASDAQ_AAPL";
 
-	// UNCOMMENT ONE EXAMPLE AT A TIME
+	// Update this call to check different samples
+	$data = example9($api_key, $symbol);
 
-	// Example 1: Hello World
-	// $quandl = new Quandl();
-	// $data = $quandl->getCsv($symbol);
+	// Example 1: Hello Quandl
+	function example1($api_key, $symbol) {
+		$quandl = new Quandl();
+		return $quandl->getSymbol($symbol);
+	}
 
 	// Example 2: API Key + JSON
-	// $quandl = new Quandl($api_key);
-	// $data = $quandl->getJson($symbol);
+	function example2($api_key, $symbol) {
+		$quandl = new Quandl($api_key);
+		$quandl->format = "json";
+		return $quandl->getSymbol($symbol);
+	}
 
-	// Example 3: Decoded JSON + Date Range
-	// $quandl = new Quandl($api_key);
-	// $quandl->trim_start = "today-30 days";
-	// $quandl->trim_end   = "today";
-	// $data = $quandl->getObject($symbol);
+	// Example 3: Date Range + Last URL
+	function example3($api_key, $symbol) {
+		$quandl = new Quandl($api_key);
+		print $quandl->last_url;
+		return $quandl->getSymbol($symbol, [
+			"trim_start" => "today-30 days",
+			"trim_end"   => "today",
+		]);
+	}
 
-	// Example 4: XML + More parameters
-	// $quandl = new Quandl($api_key);
-	// $quandl->sort_order = "desc"; // asc|desc
-	// $quandl->exclude_headers = true;
-	// $quandl->rows = 10;
-	// $quandl->column = 4; // 4 = close price
-	// $data = $quandl->getXml($symbol);
+	// Example 4: CSV + More parameters
+	function example4($api_key, $symbol) {
+		$quandl = new Quandl($api_key, "csv");
+		return $quandl->getSymbol($symbol, [
+			"sort_order"      => "desc", // asc|desc
+			"exclude_headers" => true,
+			"rows"            => 10,
+			"column"          => 4, // 4 = close price
+		]);
+	}
 
-	// Example 5: Frequency
-	// $quandl = new Quandl($api_key);
-	// $quandl->collapse = "weekly"; // none|daily|weekly|monthly|quarterly|annual
-	// $data = $quandl->getCsv($symbol);
+	// Example 5: XML + Frequency
+	function example5($api_key, $symbol) {
+		$quandl = new Quandl($api_key, "xml");
+		return $quandl->getSymbol($symbol, [
+			"collapse" => "weekly" // none|daily|weekly|monthly|quarterly|annual
+		]);
+	}
 
-	// Example 6: Transformation
-	// $quandl = new Quandl($api_key);
-	// $quandl->transformation = "diff"; // none|diff|rdiff|cumul|normalize
-	// $data = $quandl->getCsv($symbol);
+	// Example 6: Multiple Symbols
+	function example6($api_key, $symbol) {
+		$quandl = new Quandl($api_key, "csv");
+		return $quandl->getSymbols(["GOOG/NASDAQ_AAPL", "GOOG/NASDAQ_CSCO"]);
+	}
 
-	// Example 7: Constructor Options + Multiple Symbols
-	// $quandl = new Quandl($api_key, ["rows"=>30]);
-	// $data = $quandl->getData(["GOOG/NASDAQ_AAPL", "GOOG/NASDAQ_CSCO"]);
+	// Example 7: Multiple Symbols with Column Selector and Options
+	function example7($api_key, $symbol) {
+		$quandl = new Quandl($api_key, "csv");
+		$symbols = ["GOOG/NASDAQ_AAPL.4", "GOOG/NASDAQ_CSCO.4"];
+		$options = ["rows" => 10];
+		return $quandl->getSymbols($symbols, $options);
+	}
 
-	// Example 8: Multiple Symbols with Column Selector
-	// $quandl = new Quandl($api_key, ["rows"=>30]);
-	// $data = $quandl->getData(["GOOG/NASDAQ_AAPL.4", "GOOG/NASDAQ_CSCO.4"]);
+	// Example 8: Search
+	function example8($api_key, $symbol) {
+		$quandl = new Quandl($api_key);
+		return $quandl->getSearch("crude oil");
+	}
 
-	// Example 9: Search
-	// $quandl = new Quandl($api_key);
-	// $data = $quandl->search("crude oil", 10, 2);
-
-	// Example 10: Metadata
-	// $quandl = new Quandl($api_key);
-	// $quandl->exclude_data = true;
-	// $data = $quandl->getObject($symbol);
-
-	// Example 11: Symbol Lists
-	// $quandl = new Quandl($api_key);
-	// $data = $quandl->getList("WIKI");
-
-	// Example 12: Symbol Lists with Parameters
-	$quandl = new Quandl($api_key);
-	$data = $quandl->getList("WIKI", 100, 2, "json");
+	// Example 9: Symbol Lists
+	function example9($api_key, $symbol) {
+		$quandl = new Quandl($api_key, "csv");
+		return $quandl->getList("WIKI", 1, 10);
+	}
 ?>

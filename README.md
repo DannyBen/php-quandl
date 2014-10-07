@@ -16,92 +16,43 @@ the examples.
 Examples
 --------
 
-This is used in all subsequent examples.
+This is a basic call. It will return a PHP object with price
+data for AAPL:
 
 	$api_key = "YOUR_KEY_HERE";
-	$symbol  = "GOOG/NASDAQ_AAPL";
+	$quandl = new Quandl($api_key);
+	$data = $quandl->getSymbol("GOOG/NASDAQ_AAPL");
 
-### Example 1: Hello Quandl
-
-The simplest request form, sent without any API key.
-
-	$quandl = new Quandl();
-	$data = $quandl->getCsv($symbol);
-
-### Example 2: API Key + JSON
+You may pass any parameter that is mentioned in the Quandl
+documentation:
 
 	$quandl = new Quandl($api_key);
-	$data = $quandl->getJson($symbol);
+	$data = $quandl->getSymbol($symbol, [
+		"sort_order"      => "desc",
+		"exclude_headers" => true,
+		"rows"            => 10,
+		"column"          => 4, 
+	]);
 
-### Example 3: Decoded JSON + Date Range
 
-Using the `trim_start` and `trim_end` properties, you may input any
-string that can be understood by PHP's `strtotime`. 
+The date range options get a special treatment. You may use
+any date string that PHP's `strtotime()` understands.
 
-	$quandl = new Quandl($api_key);
-	$quandl->trim_start = "today-30 days";
-	$quandl->trim_end   = "today";
-	$data = $quandl->getObject($symbol);
+	$quandl = new Quandl($api_key, "csv");
+	$data = $quandl->getSymbol($symbol, [
+		"trim_start" => "today-30 days",
+		"trim_end"   => "today",
+	]);
 
-### Example 4: XML + More parameters
-
-You may assign any parameter in the Quandl documentation, using the 
-syntax `$quandl->param_name = value`.
-
-	$quandl = new Quandl($api_key);
-	$quandl->sort_order = "desc"; // asc|desc
-	$quandl->exclude_headers = true;
-	$quandl->rows = 10;
-	$quandl->column = 4; // 4 = close price
-	$data = $quandl->getXml($symbol);
-
-### Example 5: Frequency
+Multiple symbols, supported symbols and search methods are also available:
 
 	$quandl = new Quandl($api_key);
-	$quandl->collapse = "weekly"; // none|daily|weekly|monthly|quarterly|annual
-	$data = $quandl->getCsv($symbol);
+	$data = $quandl->getSymbols(["WIKI/AAPL", "WIKI/CSCO"]);
+	$data = $quandl->getSearch("crude oil");
+	$data = $quandl->getList("WIKI", 1, 10);
 
-### Example 6: Transformation
 
-	$quandl = new Quandl($api_key);
-	$quandl->transformation = "diff"; // none|diff|rdiff|cumul|normalize
-	$data = $quandl->getCsv($symbol);
-
-### Example 7: Constructor Options + Multiple Symbols
-
-The second parameter of the contructor is an optional array of options.
-Using this array is the equivalent of using the 
-`$quandl->parameter = value` syntax.
-
-In addition, all the methods that accept a symbol, also accept an array
-of symbols. Each symbol in the array may be written in the usual 
-slash notation (GOOG/NASDAQ_AAPL) or the dot notation (GOOG.NASDAQ_AAPL).
-
-	$quandl = new Quandl($api_key, ["rows"=>30]);
-	$data = $quandl->getData(["GOOG/NASDAQ_AAPL", "GOOG/NASDAQ_CSCO"]);
-
-### Example 8: Multiple Symbols with Column Selector
-
-When using multiple symbols, you may append a column selector (exactly
-as described in the Quandl documentation) to select specific columns.
-
-	$quandl = new Quandl($api_key, ["rows"=>30]);
-	$data = $quandl->getData(["GOOG/NASDAQ_AAPL.4", "GOOG/NASDAQ_CSCO.4"]);
-
-### Example 9: Search
-
-The search method receives a query, and two additional optional 
-parameters: Results per page, and page number.
-
-	$quandl = new Quandl($api_key);
-	$data = $quandl->search("crude oil", 10, 2);
-
-### Example 10: Metadata
-
-	$quandl = new Quandl($api_key);
-	$quandl->exclude_data = true;
-	$data = $quandl->getObject($symbol);
-
+More examples can be found in the [examples.php](https://github.com/DannyBen/php-quandl/blob/master/examples.php) file 
 
 Caching
 -------
@@ -109,5 +60,73 @@ Caching
 You may provide the `quandl` object with a cache handler function.
 This function should be responsible for both reading from your cache and storing to it. 
 
-See the `example_cache.php` file.
+See the [example_cache.php](https://github.com/DannyBen/php-quandl/blob/master/example_cache.php) file.
+
+
+Reference
+---------
+
+### Constructor and public properties:
+
+The constructor accepts two optional parameters: `$api_key` and `$format`:
+
+	$quandl = new Quandl("YOUR KEY", "csv");
+
+You may also set these properties later:
+
+	$quandl->api_key = "YOUR KEY";
+	$quandl->format  = "json";
+
+`$format` can be one of `csv`, `xml`, `json`, and `object` (which will return a php object obtained with `json_decode()`).
+
+After each call to Quandl, the property `$last_url` will be set 
+for debugging and other purposes.
+
+
+### getSymbol
+
+`mixed getSymbol( string $symbol [, array $params ] )`
+
+Returns an object containing data for a given symbol. The format
+of the result depends on the value of `$quandl->format`.
+
+The optional parameters array is an associative `key => value`
+array with any of the parameters supported by Quandl.
+
+You do not need to pass `auth_token` in the array, it will be 
+automatically appended.
+
+
+### getSymbols
+
+`mixed getSymbols( array $symbol [, array $params ] )`
+
+Same as `getSymbol()` only instead of a single symbol, it receives
+an array of multiple symbols. Each symbol in the array may be 
+listed using the slash notation (`WIKI/AAPL`) or dot notation 
+(`WIKI.AAPL`).
+
+In addition, you may append the column selector to each symbol in 
+order get only selected columns. For example, `WIKI/AAPL.4` will 
+return only the close prices (column 4) of AAPL.
+
+
+### getSearch
+
+`mixed getSearch( string $query [, int $page, int $per_page] )`
+
+Returns a search result object. Number of results per page is 
+limited to 300 by default.
+
+Note that currently Quandl does support CSV response for this node
+so if `$quandl->format` is "csv", this call will return a PHP objhect
+instead.
+
+
+### getList
+
+`mixed getList( string $source [, int $page, int $per_page] )`
+
+Returns a list of symbols in a given source. Number of results per page
+is limited to 300 by default.
 

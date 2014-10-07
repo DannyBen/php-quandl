@@ -4,10 +4,11 @@
 	//--------------------------------------------------------------
 	require_once "Quandl.php";
 
-	$quandl = new Quandl();
+	$api_key = "YOUR_KEY_HERE";
+
+	$quandl = new Quandl($api_key, "csv");
 	$quandl->cache_handler = 'cacheHandler';
-	$quandl->rows=10;
-	$d = $quandl->getCsv("GOOG/NASDAQ_AAPL");
+	$data = $quandl->getSymbol("GOOG/NASDAQ_AAPL");
 	
 	// A simple example of a cache handler.
 	// This function will be called by the Quandl class.
@@ -17,10 +18,13 @@
 	// operation to your cache.
 	function cacheHandler($action, $url, $data=null) {
 		$cache_key = md5("quandl:$url");
-		if($action == "get" and file_exists($cache_key)) 
-			return file_get_contents($cache_key);
+		$cache_file = __DIR__ . "/$cache_key";
+
+		if($action == "get" and file_exists($cache_file)) 
+			return file_get_contents($cache_file);
 		else if($action == "set") 
-			file_put_contents($cache_key, $data);
+			file_put_contents($cache_file, $data);
+		
 		return false;
 	}
 ?>

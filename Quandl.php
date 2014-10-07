@@ -6,131 +6,105 @@
 class Quandl {
 
 	public $api_key;
-	public $default_format = "csv";
+	public $format;
 	public $cache_handler = null;
-	public $was_cached = false;
-	private $params;
+	public $was_cached    = false;
+	public $last_url;
 
-	private static $base = "https://www.quandl.com/api/v1/datasets";
-	private static $base_multi = "https://quandl.com/api/v1/multisets";
-	private static $base_lists = "http://www.quandl.com/api/v2/datasets";
+	private static $url_templates = [
+		"symbol"  => 'https://www.quandl.com/api/v1/datasets/%s.%s?%s',
+		"symbols" => 'https://www.quandl.com/api/v1/multisets.%s?columns=%s&%s',
+		"search"  => 'https://www.quandl.com/api/v1/datasets.%s?%s',
+		"list"    => 'http://www.quandl.com/api/v2/datasets.%s?%s',
+	];
 	
-	// The constructor accepts an optional api_key and an 
-	// array of params. The params array may contain any key=>value
-	// pair that is supported by Quandl. All params will be appended
-	// to the request URL.
-	// If you prefer, you may add the params later, see __set below.
-	// Example: $quandl = new Quandl("asd123", ["trim_end"=>"yesterday"])
-	public function __construct($api_key=null, $params=[]) {
+	public function __construct($api_key=null, $format="object") {
 		$this->api_key = $api_key;
-		$this->params = $params;
+		$this->format = $format;
 	}
 
-	// Magic setter handles all calls to $quandl->unknown_var
-	// This is used to set params outside of the constructor.
-	// Example: $quandl->trim_start = "today-300 days";
-	public function __set($key, $value) {
-		if($key == "trim_start" or $key == "trim_end")
-			$value = self::convertToQuandlDate($value);
-		$this->params[$key] = $value;
+	// getSymbol returns data for a given symbol.
+	public function getSymbol($symbol, $params=null) {
+		$url = $this->getUrl("symbol", 
+			$symbol, $this->getFormat(), 
+			$this->arrangeParams($params));
+
+		return $this->getData($url);
 	}
 
-	// Magic getter, for completeness
-	public function __get($key) {
-		return $this->params[$key];
+	// getSymbols returns data for an array of symbols.
+	// Symbols may be in slash or dot notation and may include
+	// column specifier.
+	public function getSymbols($symbols, $params=null) {
+		$url = $this->getUrl("symbols", 
+			$this->getFormat(), 
+			self::convertSymbolsToMulti($symbols), 
+			$this->arrangeParams($params));
+
+		return $this->getData($url);
 	}
 
-	// getCsv returns CSV data for a quandl symbol
-	public function getCsv($symbol=null) {
-		return $this->getData($symbol, "csv");
-	}
-
-	// getJson returns JSON data for a quandl symbol
-	public function getJson($symbol=null) {
-		return $this->getData($symbol, "json");
-	}
-
-	// getObject returns a PHP object data for a quandl symbol
-	public function getObject($symbol=null) {
-		return json_decode($this->getJson($symbol));
-	}
-
-	// getXml returns XML data for a quandl symbol
-	public function getXml($symbol=null) {
-		return $this->getData($symbol, "xml");
-	}
-
-	// search returns a data object with Quandle document results
-	public function search($query, $per_page=null, $page=null) {
-		$this->query = $query;
-		$per_page and $this->per_page = $per_page;
-		$page and $this->page = $page;
-		return $this->getObject();
-	}
-
-	// 
-	public function getList($source, $per_page=300, $page=1, $format=null) {
-		$url = $this->getListUrl($source, $per_page, $page, $format);
-		return $this->executeDownload($url);
-	}
-
-	// getData returns data in any format for a given symbol.
-	// Normally, you should use the getCsv, getJson or getXml
-	// which will call getData.
-	public function getData($symbol=null, $format=null) {
-		$url = $this->getUrl($symbol, $format);
-		return $this->executeDownload($url);
-	}
-
-	// getUrl returns the complete URL for making a request to Quandl.
-	// Normally, you would not need to use it but it is publicly exposed
-	// for convenience.
-	// Note that $symbol may be an array of symbols and in this case, 
-	// may be either the slash notation or dot notation, and may include
-	// the column selector.
-	public function getUrl($symbol=null, $format=null) {
-		$is_multi = is_array($symbol);
-		$format or $format = $this->default_format;
-		$params = [];
-		
-		if($is_multi) {
-			$base   = self::$base_multi;
-			$result = "$base.$format";
-			$params["columns"] = self::convertSymbolsToMulti($symbol);
-		}
-		else {
-			$base   = self::$base;
-			$result = $symbol === null 
-				? "$base.$format" 
-				: "$base/$symbol.$format";
-		}
-
-		foreach($this->params as $k=>$v)
-			$params[$k] = $v;
-
-		$this->api_key and $params['auth_token'] = $this->api_key;
-		$params and $result .= "?" . http_build_query($params);
-
-		return $result;
-	}
-
-	// getListUrl returns a URL to the list of symbols in a 
-	// given source
-	public function getListUrl($source, $per_page=300, $page=1, $format=null) {
-		$format or $format = $this->default_format;
-		$base = self::$base_lists;
+	// getSearch returns results for a search query.
+	// CSV output is not supported with this node so if format
+	// is set to CSV, the result will fall back to object mode.
+	public function getSearch($query, $page=1, $per_page=300) {
 		$params = [
-			 "query"       => "*",
-			 "source_code" => $source,
-			 "per_page"    => $per_page,
-			 "page"        => $page,
+			"per_page" => $per_page, 
+			"page"     => $page, 
+			"query"    => $query,
 		];
-		$this->api_key and $params['auth_token'] = $this->api_key;
-		$params = http_build_query($params);
-		return "$base.$format?$params";
+		$url = $this->getUrl("search", 
+			$this->getFormat(true), 
+			$this->arrangeParams($params));
+
+		return $this->getData($url);
 	}
 
-	// executeDownload gets a URL, and returns the downloaded document
+	// getList returns the list of symbols for a given source.
+	public function getList($source, $page=1, $per_page=300) {
+		$params = [
+			"query"       => "*",
+			"source_code" => $source, 
+			"per_page"    => $per_page, 
+			"page"        => $page, 
+		];
+		$url = $this->getUrl("list", 
+			$this->getFormat(), 
+			$this->arrangeParams($params));
+
+		return $this->getData($url);
+	}
+
+	// getFormat returns one of the three formats supported by Quandl.
+	// It is here for two reasons: 
+	//  1) we also allow "object" format. this will be sent to Quandl
+	//     as "json" but the getData method will return a json_decoded
+	//     output.
+	//  2) some Quandl nodes do not support CSV (namely search).
+	private function getFormat($omit_csv=false) {
+		if(($this->format == "csv" and $omit_csv) or $this->format == "object")
+			return "json";
+		return $this->format;
+	}
+
+	// getUrl receives a kind that points to a URL template and 
+	// a variable number of parameters, which will be replaced
+	// in the template.
+	private function getUrl($kind) {
+		$template = self::$url_templates[$kind];
+		$args = array_slice(func_get_args(), 1);
+		$this->last_url = trim(vsprintf($template, $args), "?&");
+		return $this->last_url;
+	}
+
+	// getData executes the download operation and returns the result
+	// as is, or json-decoded if "object" type was requested.
+	private function getData($url) {
+		$result = $this->executeDownload($url);
+		return $this->format == "object" ? json_decode($result) : $result;
+	}
+
+	// executeDownload gets a URL, and returns the downloaded document.
 	// If a cache_handler is set, it will call it to get a document 
 	// from it, and ask it to store the downloaded object where applicable.
 	private function executeDownload($url) {
@@ -152,6 +126,23 @@ class Quandl {
 		return $data;
 	}
 
+	// arrangeParams converts a parameters array to a query string.
+	// In addition, we add some patches:
+	//  1) trim_start and trim_end are converted from any plain
+	//     language syntax to Quandle format
+	//  2) api_key is appended
+	private function arrangeParams($params) {
+		$this->api_key and $params['auth_token'] = $this->api_key;
+		if(!$params) return $params;
+		
+		foreach(["trim_start", "trim_end"] as $v) {
+			if(isset($params[$v]) )
+				$params[$v] = self::convertToQuandlDate($params[$v]);
+		}
+		
+		return http_build_query($params);
+	}
+
 	// convertToQuandlDate converts any time string supported by
 	// PHP (e.g. "today-30 days") to the format needed by Quandl
 	private static function convertToQuandlDate($time_str) {
@@ -159,9 +150,7 @@ class Quandl {
 	}
 
 	// convertSymbolsToMulti converts an array of symbols to
-	// the format neede dfor a multiset request. In essence, it
-	// just replaces slashes with dots and returns the comma 
-	// delimited list.
+	// the format needed for a multiset request. 
 	private static function convertSymbolsToMulti($symbols_array) {
 		$result = [];
 		foreach($symbols_array as $symbol) {
