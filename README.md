@@ -99,7 +99,7 @@ automatically appended.
 
 ### getSymbols
 
-`mixed getSymbols( array $symbol [, array $params ] )`
+`mixed getSymbols( array $symbols [, array $params ] )`
 
 Same as `getSymbol()` only instead of a single symbol, it receives
 an array of multiple symbols. Each symbol in the array may be 
@@ -118,9 +118,9 @@ return only the close prices (column 4) of AAPL.
 Returns a search result object. Number of results per page is 
 limited to 300 by default.
 
-Note that currently Quandl does support CSV response for this node
-so if `$quandl->format` is "csv", this call will return a PHP objhect
-instead.
+Note that currently Quandl does not support CSV response for this 
+node so if `$quandl->format` is "csv", this call will return a PHP
+object instead.
 
 
 ### getList
