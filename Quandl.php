@@ -104,23 +104,27 @@ class Quandl {
 		return $this->format == "object" ? json_decode($result) : $result;
 	}
 
-	// executeDownload gets a URL, and returns the downloaded document.
-	// If a cache_handler is set, it will call it to get a document 
-	// from it, and ask it to store the downloaded object where applicable.
+	// executeDownload gets a URL, and returns the downloaded document
+	// either from cache (if cache_handler is set) or from Quandl.
 	private function executeDownload($url) {
+		return $this->cache_handler == null
+			? file_get_contents($url)
+			: $this->attemptGetFromCache($url);
+	}
+
+	// attemptGetFromCache is called if a cache_handler is available.
+	// It will call the cache handler with a get request, return the 
+	// document if found, and will ask it to store the downloaded 
+	// object where applicable.
+	private function attemptGetFromCache($url) {
 		$this->was_cached = false;
-		if($this->cache_handler != null) {
-			$data = call_user_func($this->cache_handler, "get", $url);
-			if($data) {
-				$this->was_cached = true;
-			}
-			else {
-				$data = file_get_contents($url);
-				call_user_func($this->cache_handler, "set", $url, $data);
-			}
+		$data = call_user_func($this->cache_handler, "get", $url);
+		if($data) {
+			$this->was_cached = true;
 		}
 		else {
 			$data = file_get_contents($url);
+			call_user_func($this->cache_handler, "set", $url, $data);
 		}
 
 		return $data;
@@ -129,7 +133,7 @@ class Quandl {
 	// arrangeParams converts a parameters array to a query string.
 	// In addition, we add some patches:
 	//  1) trim_start and trim_end are converted from any plain
-	//     language syntax to Quandle format
+	//     language syntax to Quandl format
 	//  2) api_key is appended
 	private function arrangeParams($params) {
 		$this->api_key and $params['auth_token'] = $this->api_key;
