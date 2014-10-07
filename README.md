@@ -66,7 +66,7 @@ See the [example_cache.php](https://github.com/DannyBen/php-quandl/blob/master/e
 Reference
 ---------
 
-### Constructor and public properties:
+### Constructor and public properties
 
 The constructor accepts two optional parameters: `$api_key` and `$format`:
 
