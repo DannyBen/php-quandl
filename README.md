@@ -44,7 +44,8 @@ any date string that PHP's `strtotime()` understands.
 		"trim_end"   => "today",
 	]);
 
-Multiple symbols, supported symbols and search methods are also available:
+Multiple symbols, supported symbols and search methods are also 
+available:
 
 	$quandl = new Quandl($api_key);
 	$data = $quandl->getSymbols(["WIKI/AAPL", "WIKI/CSCO"]);
@@ -107,7 +108,7 @@ listed using the slash notation (`WIKI/AAPL`) or dot notation
 (`WIKI.AAPL`).
 
 In addition, you may append the column selector to each symbol in 
-order get only selected columns. For example, `WIKI/AAPL.4` will 
+order to get only selected columns. For example, `WIKI/AAPL.4` will 
 return only the close prices (column 4) of AAPL.
 
 
@@ -119,8 +120,8 @@ Returns a search result object. Number of results per page is
 limited to 300 by default.
 
 Note that currently Quandl does not support CSV response for this 
-node so if `$quandl->format` is "csv", this call will return a PHP
-object instead.
+node so if `$quandl->format` is "csv", this call will return a JSON
+string instead.
 
 
 ### getList
