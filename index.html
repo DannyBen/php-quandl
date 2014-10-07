@@ -47,112 +47,45 @@ the examples. </p>
 <h2>
 <a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
 
-<p>This is used in all subsequent examples.</p>
+<p>This is a basic call. It will return a PHP object with price
+data for AAPL:</p>
 
 <pre><code>$api_key = "YOUR_KEY_HERE";
-$symbol  = "GOOG/NASDAQ_AAPL";
+$quandl = new Quandl($api_key);
+$data = $quandl-&gt;getSymbol("GOOG/NASDAQ_AAPL");
 </code></pre>
 
-<h3>
-<a name="example-1-hello-quandl" class="anchor" href="#example-1-hello-quandl"><span class="octicon octicon-link"></span></a>Example 1: Hello Quandl</h3>
-
-<p>The simplest request form, sent without any API key.</p>
-
-<pre><code>$quandl = new Quandl();
-$data = $quandl-&gt;getCsv($symbol);
-</code></pre>
-
-<h3>
-<a name="example-2-api-key--json" class="anchor" href="#example-2-api-key--json"><span class="octicon octicon-link"></span></a>Example 2: API Key + JSON</h3>
+<p>You may pass any parameter that is mentioned in the Quandl
+documentation:</p>
 
 <pre><code>$quandl = new Quandl($api_key);
-$data = $quandl-&gt;getJson($symbol);
+$data = $quandl-&gt;getSymbol($symbol, [
+    "sort_order"      =&gt; "desc",
+    "exclude_headers" =&gt; true,
+    "rows"            =&gt; 10,
+    "column"          =&gt; 4, 
+]);
 </code></pre>
 
-<h3>
-<a name="example-3-decoded-json--date-range" class="anchor" href="#example-3-decoded-json--date-range"><span class="octicon octicon-link"></span></a>Example 3: Decoded JSON + Date Range</h3>
+<p>The date range options get a special treatment. You may use
+any date string that PHP's <code>strtotime()</code> understands.</p>
 
-<p>Using the <code>trim_start</code> and <code>trim_end</code> properties, you may input any
-string that can be understood by PHP's <code>strtotime</code>. </p>
+<pre><code>$quandl = new Quandl($api_key, "csv");
+$data = $quandl-&gt;getSymbol($symbol, [
+    "trim_start" =&gt; "today-30 days",
+    "trim_end"   =&gt; "today",
+]);
+</code></pre>
+
+<p>Multiple symbols, supported symbols and search methods are also available:</p>
 
 <pre><code>$quandl = new Quandl($api_key);
-$quandl-&gt;trim_start = "today-30 days";
-$quandl-&gt;trim_end   = "today";
-$data = $quandl-&gt;getObject($symbol);
+$data = $quandl-&gt;getSymbols(["WIKI/AAPL", "WIKI/CSCO"]);
+$data = $quandl-&gt;getSearch("crude oil");
+$data = $quandl-&gt;getList("WIKI", 1, 10);
 </code></pre>
 
-<h3>
-<a name="example-4-xml--more-parameters" class="anchor" href="#example-4-xml--more-parameters"><span class="octicon octicon-link"></span></a>Example 4: XML + More parameters</h3>
-
-<p>You may assign any parameter in the Quandl documentation, using the 
-syntax <code>$quandl-&gt;param_name = value</code>.</p>
-
-<pre><code>$quandl = new Quandl($api_key);
-$quandl-&gt;sort_order = "desc"; // asc|desc
-$quandl-&gt;exclude_headers = true;
-$quandl-&gt;rows = 10;
-$quandl-&gt;column = 4; // 4 = close price
-$data = $quandl-&gt;getXml($symbol);
-</code></pre>
-
-<h3>
-<a name="example-5-frequency" class="anchor" href="#example-5-frequency"><span class="octicon octicon-link"></span></a>Example 5: Frequency</h3>
-
-<pre><code>$quandl = new Quandl($api_key);
-$quandl-&gt;collapse = "weekly"; // none|daily|weekly|monthly|quarterly|annual
-$data = $quandl-&gt;getCsv($symbol);
-</code></pre>
-
-<h3>
-<a name="example-6-transformation" class="anchor" href="#example-6-transformation"><span class="octicon octicon-link"></span></a>Example 6: Transformation</h3>
-
-<pre><code>$quandl = new Quandl($api_key);
-$quandl-&gt;transformation = "diff"; // none|diff|rdiff|cumul|normalize
-$data = $quandl-&gt;getCsv($symbol);
-</code></pre>
-
-<h3>
-<a name="example-7-constructor-options--multiple-symbols" class="anchor" href="#example-7-constructor-options--multiple-symbols"><span class="octicon octicon-link"></span></a>Example 7: Constructor Options + Multiple Symbols</h3>
-
-<p>The second parameter of the contructor is an optional array of options.
-Using this array is the equivalent of using the 
-<code>$quandl-&gt;parameter = value</code> syntax.</p>
-
-<p>In addition, all the methods that accept a symbol, also accept an array
-of symbols. Each symbol in the array may be written in the usual 
-slash notation (GOOG/NASDAQ_AAPL) or the dot notation (GOOG.NASDAQ_AAPL).</p>
-
-<pre><code>$quandl = new Quandl($api_key, ["rows"=&gt;30]);
-$data = $quandl-&gt;getData(["GOOG/NASDAQ_AAPL", "GOOG/NASDAQ_CSCO"]);
-</code></pre>
-
-<h3>
-<a name="example-8-multiple-symbols-with-column-selector" class="anchor" href="#example-8-multiple-symbols-with-column-selector"><span class="octicon octicon-link"></span></a>Example 8: Multiple Symbols with Column Selector</h3>
-
-<p>When using multiple symbols, you may append a column selector (exactly
-as described in the Quandl documentation) to select specific columns.</p>
-
-<pre><code>$quandl = new Quandl($api_key, ["rows"=&gt;30]);
-$data = $quandl-&gt;getData(["GOOG/NASDAQ_AAPL.4", "GOOG/NASDAQ_CSCO.4"]);
-</code></pre>
-
-<h3>
-<a name="example-9-search" class="anchor" href="#example-9-search"><span class="octicon octicon-link"></span></a>Example 9: Search</h3>
-
-<p>The search method receives a query, and two additional optional 
-parameters: Results per page, and page number.</p>
-
-<pre><code>$quandl = new Quandl($api_key);
-$data = $quandl-&gt;search("crude oil", 10, 2);
-</code></pre>
-
-<h3>
-<a name="example-10-metadata" class="anchor" href="#example-10-metadata"><span class="octicon octicon-link"></span></a>Example 10: Metadata</h3>
-
-<pre><code>$quandl = new Quandl($api_key);
-$quandl-&gt;exclude_data = true;
-$data = $quandl-&gt;getObject($symbol);
-</code></pre>
+<p>More examples can be found in the <a href="https://github.com/DannyBen/php-quandl/blob/master/examples.php">examples.php</a> file </p>
 
 <h2>
 <a name="caching" class="anchor" href="#caching"><span class="octicon octicon-link"></span></a>Caching</h2>
@@ -160,7 +93,77 @@ $data = $quandl-&gt;getObject($symbol);
 <p>You may provide the <code>quandl</code> object with a cache handler function.
 This function should be responsible for both reading from your cache and storing to it. </p>
 
-<p>See the <code>example_cache.php</code> file.</p>
+<p>See the <a href="https://github.com/DannyBen/php-quandl/blob/master/example_cache.php">example_cache.php</a> file.</p>
+
+<h2>
+<a name="reference" class="anchor" href="#reference"><span class="octicon octicon-link"></span></a>Reference</h2>
+
+<h3>
+<a name="constructor-and-public-properties" class="anchor" href="#constructor-and-public-properties"><span class="octicon octicon-link"></span></a>Constructor and public properties</h3>
+
+<p>The constructor accepts two optional parameters: <code>$api_key</code> and <code>$format</code>:</p>
+
+<pre><code>$quandl = new Quandl("YOUR KEY", "csv");
+</code></pre>
+
+<p>You may also set these properties later:</p>
+
+<pre><code>$quandl-&gt;api_key = "YOUR KEY";
+$quandl-&gt;format  = "json";
+</code></pre>
+
+<p><code>$format</code> can be one of <code>csv</code>, <code>xml</code>, <code>json</code>, and <code>object</code> (which will return a php object obtained with <code>json_decode()</code>).</p>
+
+<p>After each call to Quandl, the property <code>$last_url</code> will be set 
+for debugging and other purposes.</p>
+
+<h3>
+<a name="getsymbol" class="anchor" href="#getsymbol"><span class="octicon octicon-link"></span></a>getSymbol</h3>
+
+<p><code>mixed getSymbol( string $symbol [, array $params ] )</code></p>
+
+<p>Returns an object containing data for a given symbol. The format
+of the result depends on the value of <code>$quandl-&gt;format</code>.</p>
+
+<p>The optional parameters array is an associative <code>key =&gt; value</code>
+array with any of the parameters supported by Quandl.</p>
+
+<p>You do not need to pass <code>auth_token</code> in the array, it will be 
+automatically appended.</p>
+
+<h3>
+<a name="getsymbols" class="anchor" href="#getsymbols"><span class="octicon octicon-link"></span></a>getSymbols</h3>
+
+<p><code>mixed getSymbols( array $symbol [, array $params ] )</code></p>
+
+<p>Same as <code>getSymbol()</code> only instead of a single symbol, it receives
+an array of multiple symbols. Each symbol in the array may be 
+listed using the slash notation (<code>WIKI/AAPL</code>) or dot notation 
+(<code>WIKI.AAPL</code>).</p>
+
+<p>In addition, you may append the column selector to each symbol in 
+order get only selected columns. For example, <code>WIKI/AAPL.4</code> will 
+return only the close prices (column 4) of AAPL.</p>
+
+<h3>
+<a name="getsearch" class="anchor" href="#getsearch"><span class="octicon octicon-link"></span></a>getSearch</h3>
+
+<p><code>mixed getSearch( string $query [, int $page, int $per_page] )</code></p>
+
+<p>Returns a search result object. Number of results per page is 
+limited to 300 by default.</p>
+
+<p>Note that currently Quandl does support CSV response for this node
+so if <code>$quandl-&gt;format</code> is "csv", this call will return a PHP objhect
+instead.</p>
+
+<h3>
+<a name="getlist" class="anchor" href="#getlist"><span class="octicon octicon-link"></span></a>getList</h3>
+
+<p><code>mixed getList( string $source [, int $page, int $per_page] )</code></p>
+
+<p>Returns a list of symbols in a given source. Number of results per page
+is limited to 300 by default.</p>
       </section>
     </div>
 
