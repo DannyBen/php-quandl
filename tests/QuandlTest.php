@@ -26,7 +26,7 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 		$this->helperGetSymbol("json", "e692240ceefd1bc9fde29117a6ed5d5f");
 	}
 
-	public function testObjecr() {
+	public function testObject() {
 		$this->helperGetSymbol("object", "0123cfae5111cf1ea3ba93c20406c9bb");
 	}
 
