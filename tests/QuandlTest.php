@@ -8,26 +8,33 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 	private $api_key  = "DEBUG_KEY";
 	private $symbol   = "WIKI/AAPL";
 	private $symbols  = ["WIKI/CSCO", "WIKI/AAPL"];
-	private $dates    = ["trim_start" => "2014-01-01", "trim_end"   => "2014-02-02"];
+	private $dates    = ["trim_start" => "2014-01-01", "trim_end" => "2014-02-02"];
 
 	public function tearDown() {
 		$this->cache_file and unlink($this->cache_file);
 	}
 
 	public function testCsv() {
-		$this->helperGetSymbol("csv", "57eea221bafe8a360b54068f7e93a335");
+		$this->helperGetSymbol("csv", 2800);
 	}
 
 	public function testXml() {
-		$this->helperGetSymbol("xml", "baf67cffc877a85304509513374a5a06");
+		$this->helperGetSymbol("xml", 14000);
 	}
 
 	public function testJson() {
-		$this->helperGetSymbol("json", "e692240ceefd1bc9fde29117a6ed5d5f");
+		$this->helperGetSymbol("json", 4200);
 	}
 
 	public function testObject() {
-		$this->helperGetSymbol("object", "0123cfae5111cf1ea3ba93c20406c9bb");
+		$this->helperGetSymbol("object", 12000);
+	}
+
+	public function testInvalidUrl() {
+		$quandl = new Quandl($this->api_key, "json");
+		$r = $quandl->getSymbol("INVALID/SYMBOL", $this->dates);
+		$this->assertEquals($quandl->error, "Invalid URL", 
+			"TEST invalidUrl response");
 	}
 
 	public function testGetSymbols() {
@@ -82,7 +89,7 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 		return false;
 	}
 
-	private function helperGetSymbol($format, $checksum) {
+	private function helperGetSymbol($format, $length) {
 		$quandl = new Quandl($this->api_key, $format);
 		$r = $quandl->getSymbol($this->symbol, $this->dates);
 		$quandl_format = $format;
@@ -91,11 +98,10 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 			$quandl_format = "json";
 		}
 
-		$sig = md5($r);
-		$this->assertEquals(
-			$checksum, 
-			$sig,
-			"TEST $format checksum");
+		$this->assertGreaterThan(
+			$length,
+			strlen($r), 
+			"TEST $format length");
 		
 		$this->assertEquals(
 			"https://www.quandl.com/api/v1/datasets/{$this->symbol}.{$quandl_format}?trim_start={$this->dates['trim_start']}&trim_end={$this->dates['trim_end']}&auth_token={$this->api_key}",
