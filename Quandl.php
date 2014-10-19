@@ -10,6 +10,7 @@ class Quandl {
 	public $cache_handler = null;
 	public $was_cached    = false;
 	public $last_url;
+	public $error;
 
 	private static $url_templates = [
 		"symbol"  => 'https://www.quandl.com/api/v1/datasets/%s.%s?%s',
@@ -107,9 +108,15 @@ class Quandl {
 	// executeDownload gets a URL, and returns the downloaded document
 	// either from cache (if cache_handler is set) or from Quandl.
 	private function executeDownload($url) {
-		return $this->cache_handler == null
-			? file_get_contents($url)
-			: $this->attemptGetFromCache($url);
+		if($this->cache_handler == null) {
+			$data = @file_get_contents($url);
+			if(!$data)
+				$this->error = "Invalid URL";
+		}
+		else {
+			$data = $this->attemptGetFromCache($url);
+		}
+		return $data;
 	}
 
 	// attemptGetFromCache is called if a cache_handler is available.
@@ -123,8 +130,11 @@ class Quandl {
 			$this->was_cached = true;
 		}
 		else {
-			$data = file_get_contents($url);
-			call_user_func($this->cache_handler, "set", $url, $data);
+			$data = @file_get_contents($url);
+			if($data)
+				call_user_func($this->cache_handler, "set", $url, $data);
+			else 
+				$this->error = "Invalid URL";
 		}
 
 		return $data;

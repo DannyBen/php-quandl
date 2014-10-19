@@ -7,8 +7,9 @@
 	$api_key = "YOUR_KEY_HERE";
 	$symbol  = "GOOG/NASDAQ_AAPL";
 
-	// Update this call to check different samples
-	$data = example9($api_key, $symbol);
+	// Uncomment and modify this call to check different samples
+	// $data = example9($api_key, $symbol);
+	// print_r($data);
 
 	// Example 1: Hello Quandl
 	function example1($api_key, $symbol) {
@@ -76,5 +77,14 @@
 	function example9($api_key, $symbol) {
 		$quandl = new Quandl($api_key, "csv");
 		return $quandl->getList("WIKI", 1, 10);
+	}
+
+	// Example 10: Error Handling
+	function example10($api_key, $symbol) {
+		$quandl = new Quandl($api_key, "csv");
+		$result = $quandl->getSymbol("DEBUG/INVALID");
+		if($quandl->error and !$result)
+			return $quandl->error . " - " . $quandl->last_url;
+		return $result;
 	}
 ?>
