@@ -81,7 +81,9 @@ You may also set these properties later:
 `$format` can be one of `csv`, `xml`, `json`, and `object` (which will return a php object obtained with `json_decode()`).
 
 After each call to Quandl, the property `$last_url` will be set 
-for debugging and other purposes.
+for debugging and other purposes. In case there was an error getting
+the data from Quandl, the result will be `false` and the property 
+`$error` will contain the error message.
 
 
 ### getSymbol
