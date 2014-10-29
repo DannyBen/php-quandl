@@ -12,6 +12,12 @@ Geting Started
 Include the `Quandl.php` class in your code, and run one of 
 the examples. 
 
+You may also install with composer:
+
+    "require": {
+        "dannyben/php-quandl": "*"
+    }
+
 
 Examples
 --------
