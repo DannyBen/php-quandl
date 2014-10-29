@@ -1,0 +1,12 @@
+{
+    "name": "dannyben/php-quandl",
+    "license": "MIT",
+    "require": {
+        "php": "~5.4"
+    },
+    "autoload": {
+        "classmap": [
+            "Quandl.php"
+        ]
+    }
+}
