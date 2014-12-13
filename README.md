@@ -50,11 +50,10 @@ any date string that PHP's `strtotime()` understands.
 		"trim_end"   => "today",
 	]);
 
-Multiple symbols, supported symbols and search methods are also 
-available:
+You can also search the entire Quandl database and get a list of
+supported symbols in a data source:
 
 	$quandl = new Quandl($api_key);
-	$data = $quandl->getSymbols(["WIKI/AAPL", "WIKI/CSCO"]);
 	$data = $quandl->getSearch("crude oil");
 	$data = $quandl->getList("WIKI", 1, 10);
 
@@ -104,20 +103,6 @@ array with any of the parameters supported by Quandl.
 
 You do not need to pass `auth_token` in the array, it will be 
 automatically appended.
-
-
-### getSymbols
-
-`mixed getSymbols( array $symbols [, array $params ] )`
-
-Same as `getSymbol()` only instead of a single symbol, it receives
-an array of multiple symbols. Each symbol in the array may be 
-listed using the slash notation (`WIKI/AAPL`) or dot notation 
-(`WIKI.AAPL`).
-
-In addition, you may append the column selector to each symbol in 
-order to get only selected columns. For example, `WIKI/AAPL.4` will 
-return only the close prices (column 4) of AAPL.
 
 
 ### getSearch

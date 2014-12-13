@@ -37,14 +37,6 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 			"TEST invalidUrl response");
 	}
 
-	public function testGetSymbols() {
-		$quandl = new Quandl($this->api_key, "json");
-		$r = $quandl->getSymbols($this->symbols, $this->dates);
-		$sig = md5($r);
-		$this->assertEquals("56fdde06b1cc699286b2e3bdaaf40761", $sig,
-			"TEST getSymbols checksum");
-	}
-
 	public function testGetList() {
 		$quandl = new Quandl($this->api_key);
 		$r = $quandl->getList("WIKI", 1, 10);

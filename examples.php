@@ -8,7 +8,7 @@
 	$symbol  = "GOOG/NASDAQ_AAPL";
 
 	// Uncomment and modify this call to check different samples
-	// $data = example9($api_key, $symbol);
+	// $data = example3($api_key, $symbol);
 	// print_r($data);
 
 	// Example 1: Hello Quandl
@@ -53,34 +53,20 @@
 		]);
 	}
 
-	// Example 6: Multiple Symbols
+	// Example 6: Search
 	function example6($api_key, $symbol) {
-		$quandl = new Quandl($api_key, "csv");
-		return $quandl->getSymbols(["GOOG/NASDAQ_AAPL", "GOOG/NASDAQ_CSCO"]);
-	}
-
-	// Example 7: Multiple Symbols with Column Selector and Options
-	function example7($api_key, $symbol) {
-		$quandl = new Quandl($api_key, "csv");
-		$symbols = ["GOOG/NASDAQ_AAPL.4", "GOOG/NASDAQ_CSCO.4"];
-		$options = ["rows" => 10];
-		return $quandl->getSymbols($symbols, $options);
-	}
-
-	// Example 8: Search
-	function example8($api_key, $symbol) {
 		$quandl = new Quandl($api_key);
 		return $quandl->getSearch("crude oil");
 	}
 
-	// Example 9: Symbol Lists
-	function example9($api_key, $symbol) {
+	// Example 7: Symbol Lists
+	function example7($api_key, $symbol) {
 		$quandl = new Quandl($api_key, "csv");
 		return $quandl->getList("WIKI", 1, 10);
 	}
 
-	// Example 10: Error Handling
-	function example10($api_key, $symbol) {
+	// Example 8: Error Handling
+	function example8($api_key, $symbol) {
 		$quandl = new Quandl($api_key, "csv");
 		$result = $quandl->getSymbol("DEBUG/INVALID");
 		if($quandl->error and !$result)

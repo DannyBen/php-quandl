@@ -14,7 +14,6 @@ class Quandl {
 
 	private static $url_templates = [
 		"symbol"  => 'https://www.quandl.com/api/v1/datasets/%s.%s?%s',
-		"symbols" => 'https://www.quandl.com/api/v1/multisets.%s?columns=%s&%s',
 		"search"  => 'https://www.quandl.com/api/v1/datasets.%s?%s',
 		"list"    => 'http://www.quandl.com/api/v2/datasets.%s?%s',
 	];
@@ -28,18 +27,6 @@ class Quandl {
 	public function getSymbol($symbol, $params=null) {
 		$url = $this->getUrl("symbol", 
 			$symbol, $this->getFormat(), 
-			$this->arrangeParams($params));
-
-		return $this->getData($url);
-	}
-
-	// getSymbols returns data for an array of symbols.
-	// Symbols may be in slash or dot notation and may include
-	// column specifier.
-	public function getSymbols($symbols, $params=null) {
-		$url = $this->getUrl("symbols", 
-			$this->getFormat(), 
-			self::convertSymbolsToMulti($symbols), 
 			$this->arrangeParams($params));
 
 		return $this->getData($url);
@@ -161,16 +148,6 @@ class Quandl {
 	// PHP (e.g. "today-30 days") to the format needed by Quandl
 	private static function convertToQuandlDate($time_str) {
 		return date("Y-m-d", strtotime($time_str));
-	}
-
-	// convertSymbolsToMulti converts an array of symbols to
-	// the format needed for a multiset request. 
-	private static function convertSymbolsToMulti($symbols_array) {
-		$result = [];
-		foreach($symbols_array as $symbol) {
-			$result[] = str_replace("/", ".", $symbol);
-		}
-		return implode(",", $result);
 	}
 }
 	
