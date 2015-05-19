@@ -7,9 +7,9 @@
 	$api_key = "YOUR_KEY_HERE";
 	$symbol  = "GOOG/NASDAQ_AAPL";
 
-	// Uncomment and modify this call to check different samples
-	// $data = example3($api_key, $symbol);
-	// print_r($data);
+	// Modify this call to check different samples
+	$data = example1($api_key, $symbol);
+	print_r($data);
 
 	// Example 1: Hello Quandl
 	function example1($api_key, $symbol) {

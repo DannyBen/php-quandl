@@ -9,6 +9,8 @@ class Quandl {
 	public $format;
 	public $cache_handler = null;
 	public $was_cached    = false;
+	public $force_curl    = false;
+	public $no_ssl_verify = false; // disable ssl verification for curl
 	public $last_url;
 	public $error;
 
@@ -70,8 +72,9 @@ class Quandl {
 	//     output.
 	//  2) some Quandl nodes do not support CSV (namely search).
 	private function getFormat($omit_csv=false) {
-		if(($this->format == "csv" and $omit_csv) or $this->format == "object")
+		if (($this->format == "csv" and $omit_csv) or $this->format == "object")
 			return "json";
+
 		return $this->format;
 	}
 
@@ -95,14 +98,11 @@ class Quandl {
 	// executeDownload gets a URL, and returns the downloaded document
 	// either from cache (if cache_handler is set) or from Quandl.
 	private function executeDownload($url) {
-		if($this->cache_handler == null) {
-			$data = @file_get_contents($url);
-			if(!$data)
-				$this->error = "Invalid URL";
-		}
-		else {
+		if ($this->cache_handler == null) 
+			$data = $this->download($url);
+		else 
 			$data = $this->attemptGetFromCache($url);
-		}
+
 		return $data;
 	}
 
@@ -113,15 +113,12 @@ class Quandl {
 	private function attemptGetFromCache($url) {
 		$this->was_cached = false;
 		$data = call_user_func($this->cache_handler, "get", $url);
-		if($data) {
+		if ($data) {
 			$this->was_cached = true;
 		}
 		else {
-			$data = @file_get_contents($url);
-			if($data)
-				call_user_func($this->cache_handler, "set", $url, $data);
-			else 
-				$this->error = "Invalid URL";
+			$data = $this->download($url);
+			$data and call_user_func($this->cache_handler, "set", $url, $data);
 		}
 
 		return $data;
@@ -134,10 +131,10 @@ class Quandl {
 	//  2) api_key is appended
 	private function arrangeParams($params) {
 		$this->api_key and $params['auth_token'] = $this->api_key;
-		if(!$params) return $params;
+		if (!$params) return $params;
 		
 		foreach(["trim_start", "trim_end"] as $v) {
-			if(isset($params[$v]) )
+			if (isset($params[$v]) )
 				$params[$v] = self::convertToQuandlDate($params[$v]);
 		}
 		
@@ -148,6 +145,41 @@ class Quandl {
 	// PHP (e.g. "today-30 days") to the format needed by Quandl
 	private static function convertToQuandlDate($time_str) {
 		return date("Y-m-d", strtotime($time_str));
+	}
+
+	// download fetches $url with file_get_contents or curl fallback
+	// You can force curl download by setting $force_curl to true.
+	// You can disable SSL verification for curl by setting 
+	// $no_ssl_verify to true (solves "SSL certificate problem")
+	private function download($url) {
+		if (ini_get('allow_url_fopen') and !$this->force_curl) {
+			$data = @file_get_contents($url);
+			$data or $this->error = "Invalid URL";
+			return $data;
+		}
+		if (function_exists('curl_version')) {
+			$curl = curl_init();
+			
+			curl_setopt($curl, CURLOPT_URL, $url);
+			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+			$this->no_ssl_verify and curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+			
+			$data  = curl_exec($curl);
+			$error = curl_error($curl);
+			$http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+			curl_close($curl);
+			if ($http_code == "404") {
+				$data = false;
+				$this->error = "Invalid URL";
+			}
+			else if ($error) {
+				$data = false;
+				$this->error = $error;
+			}
+			return $data;
+		}
+		$this->error = "Enable allow_url_fopen or curl";
+		return false;
 	}
 }
 	
