@@ -1,2 +1,2 @@
 language: php
-script: phpunit --stop-on-failure .
+script: phpunit .
