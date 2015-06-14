@@ -7,9 +7,10 @@ require_once __DIR__ . "/../Quandl.php";
 class QuandlTest extends PHPUnit_Framework_TestCase {
 	private $api_key  = "DEBUG_KEY";
 
-	private $symbol   = "WIKI/AAPL";
-	private $symbols  = ["WIKI/CSCO", "WIKI/AAPL"];
-	private $dates    = ["trim_start" => "2014-01-01", "trim_end" => "2014-02-02"];
+	private $symbol     = "WIKI/AAPL";
+	private $symbols    = ["WIKI/CSCO", "WIKI/AAPL"];
+	private $dates      = ["trim_start" => "2014-01-01", "trim_end" => "2014-02-02"];
+	private $cache_file = false;
 
 	public function tearDown() {
 		$this->cache_file and unlink($this->cache_file);
