@@ -32,8 +32,8 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testObject() {
-		$this->_testGetSymbol("object", 12000);
-		$this->_testGetSymbol("object", 12000, true);
+		$this->_testGetSymbol("object", 7400);
+		$this->_testGetSymbol("object", 7400, true);
 	}
 
 	public function testInvalidUrl() {
