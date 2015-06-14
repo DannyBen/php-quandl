@@ -2,7 +2,7 @@
 //--------------------------------------------------------------
 // Tests: Quandl
 //--------------------------------------------------------------
-require_once "../Quandl.php";
+require_once __DIR__ . "/../Quandl.php";
 
 class QuandlTest extends PHPUnit_Framework_TestCase {
 	private $api_key  = "DEBUG_KEY";
