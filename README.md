@@ -11,20 +11,10 @@ Geting Started
 
 Include the `Quandl.php` class in your code, and run one of the examples. 
 
-If you're using Composer to manage dependencies, you can include the following in your composer.json file:
-
-```json
-{
-    "require": {
-        "dannyben/php-quandl": "*"
-    }
-}
-```
-
-Or
+To install with composer:
 
 ```sh
-composer require dannyben/php-quandl
+$ composer require dannyben/php-quandl
 ```
 
 Examples
