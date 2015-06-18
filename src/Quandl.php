@@ -19,13 +19,13 @@ class Quandl {
         "list"    => 'https://www.quandl.com/api/v2/datasets.%s?%s',
     ];
     
-    public function __construct($api_key=null, $format="object") {
+    public function __construct($api_key = null, $format = "object") {
         $this->api_key = $api_key;
         $this->format = $format;
     }
 
     // getSymbol returns data for a given symbol.
-    public function getSymbol($symbol, $params=null) {
+    public function getSymbol($symbol, $params = null) {
         $url = $this->getUrl("symbol", 
             $symbol, $this->getFormat(), 
             $this->arrangeParams($params));
@@ -36,7 +36,7 @@ class Quandl {
     // getSearch returns results for a search query.
     // CSV output is not supported with this node so if format
     // is set to CSV, the result will fall back to object mode.
-    public function getSearch($query, $page=1, $per_page=300)
+    public function getSearch($query, $page = 1, $per_page = 300)
     {
         $params = [
             "per_page" => $per_page, 
@@ -56,7 +56,7 @@ class Quandl {
     }
 
     // getList returns the list of symbols for a given source.
-    public function getList($source, $page=1, $per_page=300) {
+    public function getList($source, $page = 1, $per_page = 300) {
         $params = [
             "query"       => "*",
             "source_code" => $source, 
@@ -76,7 +76,7 @@ class Quandl {
     //     as "json" but the getData method will return a json_decoded
     //     output.
     //  2) some Quandl nodes do not support CSV (namely search).
-    private function getFormat($omit_csv=false) {
+    private function getFormat($omit_csv = false) {
         if (($this->format == "csv" and $omit_csv) or $this->format == "object")
             return "json";
 
@@ -86,6 +86,10 @@ class Quandl {
     // getUrl receives a kind that points to a URL template and 
     // a variable number of parameters, which will be replaced
     // in the template.
+
+    /**
+     * @param string $kind
+     */
     private function getUrl($kind) {
         $template = self::$url_templates[$kind];
         $args = array_slice(func_get_args(), 1);
@@ -95,6 +99,10 @@ class Quandl {
 
     // getData executes the download operation and returns the result
     // as is, or json-decoded if "object" type was requested.
+
+    /**
+     * @param string $url
+     */
     private function getData($url) {
         $result = $this->executeDownload($url);
         return $this->format == "object" ? json_decode($result) : $result;
@@ -147,8 +155,8 @@ class Quandl {
         $this->api_key and $params['auth_token'] = $this->api_key;
         if (!$params) return $params;
         
-        foreach(["trim_start", "trim_end"] as $v) {
-            if (isset($params[$v]) )
+        foreach (["trim_start", "trim_end"] as $v) {
+            if (isset($params[$v]))
                 $params[$v] = self::convertToQuandlDate($params[$v]);
         }
         
@@ -179,15 +187,14 @@ class Quandl {
         if (ini_get('allow_url_fopen') and !$this->force_curl) {
             try {
                 $data = file_get_contents($url);
-            }
-            catch (Exception $e) {
+            } catch (Exception $e) {
                 $this->error = $e->getMessage();
             }
             
             return $data;
         }
 
-        if (! function_exists('curl_version')) {
+        if (!function_exists('curl_version')) {
             $this->error = "Enable allow_url_fopen or curl";
             return false;
         }

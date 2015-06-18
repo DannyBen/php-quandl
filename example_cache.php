@@ -16,13 +16,13 @@
 	// object or false.
 	// When action == "set", you should perform the save 
 	// operation to your cache.
-	function cacheHandler($action, $url, $data=null) {
+	function cacheHandler($action, $url, $data = null) {
 		$cache_key = md5("quandl:$url");
 		$cache_file = __DIR__ . "/$cache_key";
 
-		if($action == "get" and file_exists($cache_file)) 
+		if ($action == "get" and file_exists($cache_file)) 
 			return file_get_contents($cache_file);
-		else if($action == "set") 
+		else if ($action == "set") 
 			file_put_contents($cache_file, $data);
 		
 		return false;
