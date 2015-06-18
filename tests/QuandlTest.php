@@ -2,14 +2,15 @@
 //--------------------------------------------------------------
 // Tests: Quandl
 //--------------------------------------------------------------
-require_once "../Quandl.php";
+require_once __DIR__ . "/../Quandl.php";
 
 class QuandlTest extends PHPUnit_Framework_TestCase {
 	private $api_key  = "DEBUG_KEY";
 
-	private $symbol   = "WIKI/AAPL";
-	private $symbols  = ["WIKI/CSCO", "WIKI/AAPL"];
-	private $dates    = ["trim_start" => "2014-01-01", "trim_end" => "2014-02-02"];
+	private $symbol     = "WIKI/AAPL";
+	private $symbols    = ["WIKI/CSCO", "WIKI/AAPL"];
+	private $dates      = ["trim_start" => "2014-01-01", "trim_end" => "2014-02-02"];
+	private $cache_file = false;
 
 	public function tearDown() {
 		$this->cache_file and unlink($this->cache_file);
@@ -31,8 +32,8 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testObject() {
-		$this->_testGetSymbol("object", 12000);
-		$this->_testGetSymbol("object", 12000, true);
+		$this->_testGetSymbol("object", 7400);
+		$this->_testGetSymbol("object", 7400, true);
 	}
 
 	public function testInvalidUrl() {
