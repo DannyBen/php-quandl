@@ -69,7 +69,7 @@
 	function example8($api_key, $symbol) {
 		$quandl = new Quandl($api_key, "csv");
 		$result = $quandl->getSymbol("DEBUG/INVALID");
-		if($quandl->error and !$result)
+		if ($quandl->error and !$result)
 			return $quandl->error . " - " . $quandl->last_url;
 		return $result;
 	}
