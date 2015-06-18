@@ -136,3 +136,11 @@ mixed getList( string $source [, int $page, int $per_page] )
 ```
 
 Returns a list of symbols in a given source. Number of results per page is limited to 300 by default.
+
+
+Tests
+-----
+
+From the project directory, tests can be ran using:
+    
+    ./vendor/bin/phpunit

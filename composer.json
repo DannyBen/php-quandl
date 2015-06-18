@@ -4,9 +4,12 @@
     "require": {
         "php": "~5.4"
     },
+    "require-dev": {
+        "phpunit/phpunit": "4.0.*"
+    },
     "autoload": {
-        "classmap": [
-            "Quandl.php"
-        ]
+        "psr-4": {
+            "DannyBen\\Quandl\\": "src"
+        }
     }
 }
