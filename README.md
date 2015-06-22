@@ -1,6 +1,8 @@
 PHP Quandl
 ==========
 
+[![Code Climate](https://codeclimate.com/github/DannyBen/php-quandl/badges/gpa.svg)](https://codeclimate.com/github/DannyBen/php-quandl)
+
 This library provides easy access to the 
 [Quandl API](https://www.quandl.com/help/api) 
 using PHP.
