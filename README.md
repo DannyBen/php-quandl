@@ -1,6 +1,7 @@
 PHP Quandl
 ==========
 
+[![Build Status](https://travis-ci.org/DannyBen/php-quandl.svg?branch=master)](https://travis-ci.org/DannyBen/php-quandl)
 [![Code Climate](https://codeclimate.com/github/DannyBen/php-quandl/badges/gpa.svg)](https://codeclimate.com/github/DannyBen/php-quandl)
 
 This library provides easy access to the 
