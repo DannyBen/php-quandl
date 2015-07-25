@@ -11,6 +11,7 @@ class Quandl {
 	public $was_cached    = false;
 	public $force_curl    = false;
 	public $no_ssl_verify = false; // disable ssl verification for curl
+	public $timeout       = false;
 	public $last_url;
 	public $error;
 
@@ -153,8 +154,17 @@ class Quandl {
 	// $no_ssl_verify to true (solves "SSL certificate problem")
 	private function download($url) {
 		if (ini_get('allow_url_fopen') and !$this->force_curl) {
-			$data = @file_get_contents($url);
-			$data or $this->error = "Invalid URL";
+			// Set timeout, doesnt seem to work with ini_set
+			// $this->timeout and ini_set('default_socket_timeout', $this->timeout);
+			if ($this->timeout) {
+				$context = stream_context_create( ['http' => ['timeout' => $this->timeout]] );
+				$data = @file_get_contents($url, false, $context);
+			}
+			else {
+				$data = @file_get_contents($url);
+			}
+
+			$data or $this->error = ($this->timeout ? "Invalid URL or timed out" : "Invalid URL");
 			return $data;
 		}
 		if (function_exists('curl_version')) {
@@ -162,6 +172,7 @@ class Quandl {
 			
 			curl_setopt($curl, CURLOPT_URL, $url);
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+			$this->timeout       and curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
 			$this->no_ssl_verify and curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
 			
 			$data  = curl_exec($curl);
