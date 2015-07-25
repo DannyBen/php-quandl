@@ -78,7 +78,7 @@ See the [example_cache.php](https://github.com/DannyBen/php-quandl/blob/master/e
 Reference
 ---------
 
-### Constructor and public properties
+### Constructor
 
 The constructor accepts two optional parameters: `$api_key` and `$format`:
 
@@ -86,22 +86,96 @@ The constructor accepts two optional parameters: `$api_key` and `$format`:
 $quandl = new Quandl("YOUR KEY", "csv");
 ```
 
-You may also set these properties later:
+You may also set these properties later (see below);
+
+
+
+
+
+
+### Public Properties
+
+
+#### `$api_key`
 
 ```php
 $quandl->api_key = "YOUR KEY";
-$quandl->format  = "json";
+```
+Set your API key
+
+#### `$format`
+
+```php
+$quandl->format = 'csv';
 ```
 
-`$format` can be one of `csv`, `xml`, `json`, and `object` (which will return a php object obtained with `json_decode()`).
-
-After each call to Quandl, the property `$last_url` will be set 
-for debugging and other purposes. In case there was an error getting
-the data from Quandl, the result will be `false` and the property 
-`$error` will contain the error message.
+Set the output format. Can be: `csv`, `xml`, `json`, and `object` 
+(which will return a php object obtained with `json_decode()`).
 
 
-### getSymbol
+#### `$force_curl`
+
+```php
+$quandl->force_curl = true;
+```
+
+Force download using curl. By default, we will try to download with 
+`file_get_contents` if available, and fall back to `curl` only as a last 
+resort.
+
+
+#### `$no_ssl_verify`
+
+```php
+$quandl->no_ssl_verify = true;
+```
+
+Disables curl SSL verification. Set to true if you get an error saying 
+"SSL certificate problem".
+
+
+#### `$timeout`
+
+```php
+$quandl->timeout = 60;
+```
+
+Set the timeout for the download operations.
+
+
+#### `$last_url`
+
+```php
+print $quandl->last_url;
+```
+
+Holds the last API URL as requested from Quandl, for debugging.
+
+
+#### `$error`
+
+```php
+print $quandl->error;
+```
+
+In case there was an error getting the data from Quandl, the request response
+will be `false` and this property will contain the error message.
+
+#### `$was_cached`
+
+```php
+print $quandl->was_cached;
+```
+
+When using a cache handler, this property will be set to `true` if the 
+response came from the cache.
+
+
+
+
+### Methods
+
+#### `getSymbol`
 
 ```php
 mixed getSymbol( string $symbol [, array $params ] )
@@ -117,7 +191,7 @@ You do not need to pass `auth_token` in the array, it will be
 automatically appended.
 
 
-### getSearch
+#### `getSearch`
 
 ```php
 mixed getSearch( string $query [, int $page, int $per_page] )
@@ -131,7 +205,7 @@ node so if `$quandl->format` is "csv", this call will return a JSON
 string instead.
 
 
-### getList
+#### `getList`
 
 ```php
 mixed getList( string $source [, int $page, int $per_page] )
