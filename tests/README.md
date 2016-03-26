@@ -6,13 +6,13 @@ production and can safely delete it if you are not using PHPUnit.
 
 ## Run Tests
 
-	$ phpunit --stop-on-failure .
+    $ phpunit --stop-on-failure .
 
 If you run the tests multiple times, you will eventually reach the Quandl call
 limit for key-less calls. 
 
 In this case, you can simply set your own key in an environment variable:
 
-  $ export QUANDL_KEY=your_key_here
-  $ phpunit --stop-on-failure .
+    $ export QUANDL_KEY=your_key_here
+    $ phpunit --stop-on-failure .
 
