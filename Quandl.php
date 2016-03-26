@@ -167,6 +167,7 @@ class Quandl {
 			$data or $this->error = ($this->timeout ? "Invalid URL or timed out" : "Invalid URL");
 			return $data;
 		}
+
 		if (function_exists('curl_version')) {
 			$curl = curl_init();
 			
