@@ -12,7 +12,13 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 	private $dates      = ["trim_start" => "2014-01-01", "trim_end" => "2014-02-02"];
 	private $cache_file = false;
 
-	public function tearDown() {
+	protected function setup() {
+		if (getenv('QUANDL_KEY')) {
+			$this->api_key = getenv('QUANDL_KEY');
+		}
+	}
+
+	protected function tearDown() {
 		$this->cache_file and unlink($this->cache_file);
 	}
 
