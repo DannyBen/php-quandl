@@ -91,7 +91,7 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 		$quandl = new Quandl($this->api_key);
 		$quandl->force_curl = $quandl->no_ssl_verify = $force_curl;
 		$r = $quandl->getSearch("crud oil", 1, 10);
-		$this->assertEquals(10, count($r->sources),
+		$this->assertEquals(10, count($r->docs),
 			"TEST getSearch count");
 	}
 

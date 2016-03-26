@@ -157,6 +157,7 @@ class Quandl {
 			$data or $this->error = "Invalid URL";
 			return $data;
 		}
+
 		if (function_exists('curl_version')) {
 			$curl = curl_init();
 			
