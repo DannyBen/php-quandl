@@ -20,7 +20,7 @@ class Quandl {
 		"search"  => 'https://www.quandl.com/api/v1/datasets.%s?%s',
 		"list"    => 'https://www.quandl.com/api/v2/datasets.%s?%s',
 	];
-	
+
 	public function __construct($api_key=null, $format="object") {
 		$this->api_key = $api_key;
 		$this->format = $format;
@@ -138,7 +138,7 @@ class Quandl {
 			if (isset($params[$v]) )
 				$params[$v] = self::convertToQuandlDate($params[$v]);
 		}
-		
+
 		return http_build_query($params);
 	}
 
@@ -154,45 +154,52 @@ class Quandl {
 	// $no_ssl_verify to true (solves "SSL certificate problem")
 	private function download($url) {
 		if (ini_get('allow_url_fopen') and !$this->force_curl) {
-			// Set timeout, doesnt seem to work with ini_set
-			// $this->timeout and ini_set('default_socket_timeout', $this->timeout);
-			if ($this->timeout) {
-				$context = stream_context_create( ['http' => ['timeout' => $this->timeout]] );
-				$data = @file_get_contents($url, false, $context);
-			}
-			else {
-				$data = @file_get_contents($url);
-			}
-
-			$data or $this->error = ($this->timeout ? "Invalid URL or timed out" : "Invalid URL");
-			return $data;
+			return $this->simple_download($url);
 		}
 
 		if (function_exists('curl_version')) {
-			$curl = curl_init();
-			
-			curl_setopt($curl, CURLOPT_URL, $url);
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-			$this->timeout       and curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
-			$this->no_ssl_verify and curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-			
-			$data  = curl_exec($curl);
-			$error = curl_error($curl);
-			$http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-			curl_close($curl);
-			if ($http_code == "404") {
-				$data = false;
-				$this->error = "Invalid URL";
-			}
-			else if ($error) {
-				$data = false;
-				$this->error = $error;
-			}
-			return $data;
+			return $this->curl_download($url);
 		}
+
 		$this->error = "Enable allow_url_fopen or curl";
 		return false;
 	}
+
+	private function simple_download($url) {
+		// Set timeout, doesnt seem to work with ini_set
+		// $this->timeout and ini_set('default_socket_timeout', $this->timeout);
+		if ($this->timeout) {
+			$context = stream_context_create( ['http' => ['timeout' => $this->timeout]] );
+			$data = @file_get_contents($url, false, $context);
+		}
+		else {
+			$data = @file_get_contents($url);
+		}
+
+		$data or $this->error = ($this->timeout ? "Invalid URL or timed out" : "Invalid URL");
+		return $data;
+	}
+
+	private function curl_download($url) {
+		$curl = curl_init();
+
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		$this->timeout       and curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
+		$this->no_ssl_verify and curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+
+		$data  = curl_exec($curl);
+		$error = curl_error($curl);
+		$http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+		curl_close($curl);
+		if ($http_code == "404") {
+			$data = false;
+			$this->error = "Invalid URL";
+		}
+		else if ($error) {
+			$data = false;
+			$this->error = $error;
+		}
+		return $data;
+	}
 }
-	
-?>
