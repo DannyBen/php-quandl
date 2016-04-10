@@ -154,18 +154,18 @@ class Quandl {
 	// $no_ssl_verify to true (solves "SSL certificate problem")
 	private function download($url) {
 		if (ini_get('allow_url_fopen') and !$this->force_curl) {
-			return $this->simple_download($url);
+			return $this->simpleDownload($url);
 		}
 
 		if (function_exists('curl_version')) {
-			return $this->curl_download($url);
+			return $this->curlDownload($url);
 		}
 
 		$this->error = "Enable allow_url_fopen or curl";
 		return false;
 	}
 
-	private function simple_download($url) {
+	private function simpleDownload($url) {
 		// Set timeout, doesnt seem to work with ini_set
 		// $this->timeout and ini_set('default_socket_timeout', $this->timeout);
 		if ($this->timeout) {
@@ -180,7 +180,7 @@ class Quandl {
 		return $data;
 	}
 
-	private function curl_download($url) {
+	private function curlDownload($url) {
 		$curl = curl_init();
 
 		curl_setopt($curl, CURLOPT_URL, $url);
