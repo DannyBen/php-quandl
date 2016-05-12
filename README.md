@@ -1,8 +1,9 @@
 PHP Quandl
 ==========
 
-[![Build Status](https://travis-ci.org/DannyBen/php-quandl.svg?branch=master)](https://travis-ci.org/DannyBen/php-quandl)
-[![Code Climate](https://codeclimate.com/github/DannyBen/php-quandl/badges/gpa.svg)](https://codeclimate.com/github/DannyBen/php-quandl)
+[![Packagist](https://img.shields.io/packagist/v/dannyben/php-quandl.svg?maxAge=2592000&style=flat-square)](https://packagist.org/packages/dannyben/php-quandl)
+[![Build Status](https://img.shields.io/travis/DannyBen/php-quandl.svg?maxAge=2592000&style=flat-square)](https://travis-ci.org/DannyBen/php-quandl)
+[![Code Climate](https://img.shields.io/codeclimate/github/DannyBen/php-quandl.svg?maxAge=2592000&style=flat-square)](https://codeclimate.com/github/DannyBen/php-quandl)
 
 This library provides easy access to the 
 [Quandl API](https://www.quandl.com/help/api) 
