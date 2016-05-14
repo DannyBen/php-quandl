@@ -16,9 +16,9 @@ class Quandl {
 	public $error;
 
 	private static $url_templates = [
-		"symbol"  => 'https://www.quandl.com/api/v1/datasets/%s.%s?%s',
-		"search"  => 'https://www.quandl.com/api/v1/datasets.%s?%s',
-		"list"    => 'https://www.quandl.com/api/v2/datasets.%s?%s',
+		"symbol"  => 'https://www.quandl.com/api/v3/datasets/%s.%s?%s',
+		"search"  => 'https://www.quandl.com/api/v3/datasets.%s?%s',
+		"list"    => 'https://www.quandl.com/api/v3/datasets.%s?%s',
 		"meta"    => 'https://www.quandl.com/api/v3/datasets/%s/metadata.%s',
 	];
 
