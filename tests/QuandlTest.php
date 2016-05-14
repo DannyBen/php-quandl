@@ -57,6 +57,11 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 		$this->_testGetSearch(true);
 	}
 
+	public function testGetMeta() {
+		$this->_testGetMeta();
+		$this->_testGetMeta(true);
+	}
+
 	public function testCache() {
 		$this->_testCache();
 		$this->cache_file and unlink($this->cache_file);
@@ -89,15 +94,23 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 		$quandl = new Quandl($this->api_key);
 		$quandl->force_curl = $quandl->no_ssl_verify = $force_curl;
 		$r = $quandl->getList("WIKI", 1, 10);
-		$this->assertEquals(10, count($r->docs),
+		$this->assertEquals(10, count($r->datasets),
 			"TEST getList count");
+	}
+
+	private function _testGetMeta($force_curl=false) {
+		$quandl = new Quandl($this->api_key);
+		$quandl->force_curl = $quandl->no_ssl_verify = $force_curl;
+		$r = $quandl->getMeta("GOOG/NASDAQ_AAPL");
+		$this->assertEquals('NASDAQ_AAPL', $r->dataset->dataset_code, "TEST getMeta dataset_code");
+		$this->assertEquals('GOOG', $r->dataset->database_code, "TEST getMeta database_code");
 	}
 
 	private function _testGetSearch($force_curl=false) {
 		$quandl = new Quandl($this->api_key);
 		$quandl->force_curl = $quandl->no_ssl_verify = $force_curl;
 		$r = $quandl->getSearch("crud oil", 1, 10);
-		$this->assertEquals(10, count($r->docs),
+		$this->assertEquals(10, count($r->datasets),
 			"TEST getSearch count");
 	}
 
@@ -106,12 +119,12 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 		$quandl->force_curl = $quandl->no_ssl_verify = $force_curl;
 		$quandl->cache_handler = array($this, "cacheHandler");
 		$r = $quandl->getSymbol($this->symbol, $this->dates);
-		$count = count($r->data);
+		$count = count($r->dataset->data);
 		$this->assertFalse($quandl->was_cached, 
 			"TEST was_cache should be false");
 
 		$r = $quandl->getSymbol($this->symbol, $this->dates);
-		$this->assertEquals($count, count($r->data), 
+		$this->assertEquals($count, count($r->dataset->data), 
 			"TEST count before and after cache should match");
 
 		$this->assertTrue($quandl->was_cached, 
@@ -134,7 +147,7 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 			"TEST $format length");
 		
 		$this->assertEquals(
-			"https://www.quandl.com/api/v1/datasets/{$this->symbol}.{$quandl_format}?trim_start={$this->dates['trim_start']}&trim_end={$this->dates['trim_end']}&auth_token={$this->api_key}",
+			"https://www.quandl.com/api/v3/datasets/{$this->symbol}.{$quandl_format}?trim_start={$this->dates['trim_start']}&trim_end={$this->dates['trim_end']}&auth_token={$this->api_key}",
 			$quandl->last_url,
 			"TEST $format url");
 	}

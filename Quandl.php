@@ -16,9 +16,10 @@ class Quandl {
 	public $error;
 
 	private static $url_templates = [
-		"symbol"  => 'https://www.quandl.com/api/v1/datasets/%s.%s?%s',
-		"search"  => 'https://www.quandl.com/api/v1/datasets.%s?%s',
-		"list"    => 'https://www.quandl.com/api/v2/datasets.%s?%s',
+		"symbol"  => 'https://www.quandl.com/api/v3/datasets/%s.%s?%s',
+		"search"  => 'https://www.quandl.com/api/v3/datasets.%s?%s',
+		"list"    => 'https://www.quandl.com/api/v3/datasets.%s?%s',
+		"meta"    => 'https://www.quandl.com/api/v3/datasets/%s/metadata.%s',
 	];
 
 	public function __construct($api_key=null, $format="object") {
@@ -29,6 +30,15 @@ class Quandl {
 	// getSymbol returns data for a given symbol.
 	public function getSymbol($symbol, $params=null) {
 		$url = $this->getUrl("symbol", 
+			$symbol, $this->getFormat(), 
+			$this->arrangeParams($params));
+
+		return $this->getData($url);
+	}
+
+	// getMeta returns metadata for a given symbol.
+	public function getMeta($symbol, $params=null) {
+		$url = $this->getUrl("meta", 
 			$symbol, $this->getFormat(), 
 			$this->arrangeParams($params));
 

@@ -214,3 +214,12 @@ mixed getList( string $source [, int $page, int $per_page] )
 ```
 
 Returns a list of symbols in a given source. Number of results per page is limited to 300 by default.
+
+
+#### `getMeta`
+
+```php
+mixed getMeta( string $source [, array $params] )
+```
+
+Returns a metadata about a symbol.
