@@ -20,7 +20,10 @@ class Quandl {
 		"search"  => 'https://www.quandl.com/api/v3/datasets.%s?%s',
 		"list"    => 'https://www.quandl.com/api/v3/datasets.%s?%s',
 		"meta"    => 'https://www.quandl.com/api/v3/datasets/%s/metadata.%s',
+		"dbs"     => 'https://www.quandl.com/api/v3/databases.%s?%s',
 	];
+
+	// --- API Methods
 
 	public function __construct($api_key=null, $format="object") {
 		$this->api_key = $api_key;
@@ -29,17 +32,26 @@ class Quandl {
 
 	// getSymbol returns data for a given symbol.
 	public function getSymbol($symbol, $params=null) {
-		$url = $this->getUrl("symbol", 
-			$symbol, $this->getFormat(), 
+		$url = $this->getUrl("symbol", $symbol, $this->getFormat(), 
 			$this->arrangeParams($params));
 
 		return $this->getData($url);
 	}
 
 	// getMeta returns metadata for a given symbol.
-	public function getMeta($symbol, $params=null) {
-		$url = $this->getUrl("meta", 
-			$symbol, $this->getFormat(), 
+	public function getMeta($symbol) {
+		$url = $this->getUrl("meta", $symbol, $this->getFormat());
+		return $this->getData($url);
+	}
+
+	// getDatabases returns the list of databases. Quandl limits it to 
+	// 100 per page at most.
+	public function getDatabases($page=1, $per_page=100) {
+		$params = [
+			"per_page"    => $per_page, 
+			"page"        => $page, 
+		];
+		$url = $this->getUrl("dbs", $this->getFormat(), 
 			$this->arrangeParams($params));
 
 		return $this->getData($url);
@@ -54,8 +66,7 @@ class Quandl {
 			"page"     => $page, 
 			"query"    => $query,
 		];
-		$url = $this->getUrl("search", 
-			$this->getFormat(true), 
+		$url = $this->getUrl("search", $this->getFormat(true), 
 			$this->arrangeParams($params));
 
 		return $this->getData($url);
@@ -69,12 +80,13 @@ class Quandl {
 			"per_page"    => $per_page, 
 			"page"        => $page, 
 		];
-		$url = $this->getUrl("list", 
-			$this->getFormat(), 
+		$url = $this->getUrl("list", $this->getFormat(), 
 			$this->arrangeParams($params));
 
 		return $this->getData($url);
 	}
+
+	// --- Private Methods
 
 	// getFormat returns one of the three formats supported by Quandl.
 	// It is here for two reasons: 

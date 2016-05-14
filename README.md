@@ -160,8 +160,8 @@ Holds the last API URL as requested from Quandl, for debugging.
 print $quandl->error;
 ```
 
-In case there was an error getting the data from Quandl, the request response
-will be `false` and this property will contain the error message.
+In case there was an error getting the data from Quandl, the request 
+response will be `false` and this property will contain the error message.
 
 #### `$was_cached`
 
@@ -213,13 +213,24 @@ string instead.
 mixed getList( string $source [, int $page, int $per_page] )
 ```
 
-Returns a list of symbols in a given source. Number of results per page is limited to 300 by default.
+Returns a list of symbols in a given source. Number of results per page is 
+limited to 300 by default.
 
 
 #### `getMeta`
 
 ```php
-mixed getMeta( string $source [, array $params] )
+mixed getMeta( string $source )
 ```
 
-Returns a metadata about a symbol.
+Returns metadata about a symbol.
+
+
+#### `getDatabases`
+
+```php
+mixed getDatabases( [int $page, int $per_page] )
+```
+
+Returns a list of available databases. Number of results per page is 
+limited to 100 by default.

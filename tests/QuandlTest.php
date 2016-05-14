@@ -62,6 +62,10 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 		$this->_testGetMeta(true);
 	}
 
+	public function testGetDatabases() {
+		$this->_testGetDatabases();
+	}
+
 	public function testCache() {
 		$this->_testCache();
 		$this->cache_file and unlink($this->cache_file);
@@ -104,6 +108,13 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 		$r = $quandl->getMeta("GOOG/NASDAQ_AAPL");
 		$this->assertEquals('NASDAQ_AAPL', $r->dataset->dataset_code, "TEST getMeta dataset_code");
 		$this->assertEquals('GOOG', $r->dataset->database_code, "TEST getMeta database_code");
+	}
+
+	private function _testGetDatabases() {
+		$quandl = new Quandl($this->api_key);
+		$r = $quandl->getDatabases(1, 5);
+		$this->assertEquals(5, count($r->databases), "TEST getDatabases count");
+		$this->assertTrue(array_key_exists('database_code', $r->databases[0]), "TEST getDatabases keys");
 	}
 
 	private function _testGetSearch($force_curl=false) {
