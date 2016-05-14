@@ -4,11 +4,11 @@
 	//--------------------------------------------------------------
 	require_once "Quandl.php";
 
-	$api_key = "YOUR_KEY_HERE";
+	$api_key = $_SERVER['QUANDL_KEY'] ?: "YOUR_KEY_HERE";
 	$symbol  = "GOOG/NASDAQ_AAPL";
 
 	// Modify this call to any `exampleN` to check different samples
-	$data = example1($api_key, $symbol);
+	$data = example10($api_key, $symbol);
 	print_r($data);
 
 	// Example 1: Hello Quandl
@@ -71,8 +71,20 @@
 		return $quandl->getMeta($symbol);
 	}
 
-	// Example 9: Error Handling
-	function example9($api_key, $symbol) {
+	// Example 9: List of Databases
+	function example9($api_key, $symbol=null) {
+		$quandl = new Quandl($api_key);
+		return $quandl->getDatabases();
+	}
+
+	// Example 10: Direct Call (access any Quandl endpoint)
+	function example10($api_key, $symbol=null) {
+		$quandl = new Quandl($api_key);
+		return $quandl->get('databases/WIKI');
+	}
+
+	// Example 11: Error Handling
+	function example11($api_key, $symbol) {
 		$quandl = new Quandl($api_key, "csv");
 		$result = $quandl->getSymbol("DEBUG/INVALID");
 		if($quandl->error and !$result)
