@@ -16,3 +16,7 @@ In this case, you can simply set your own key in an environment variable:
     $ export QUANDL_KEY=your_key_here
     $ phpunit --stop-on-failure .
 
+To test a specific method:
+
+  $ phpunit --stop-on-failure --filter PartialMethodName .
+
