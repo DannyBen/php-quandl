@@ -57,6 +57,11 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 		$this->_testGetSearch(true);
 	}
 
+	public function testGetMeta() {
+		$this->_testGetMeta();
+		$this->_testGetMeta(true);
+	}
+
 	public function testCache() {
 		$this->_testCache();
 		$this->cache_file and unlink($this->cache_file);
@@ -91,6 +96,14 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 		$r = $quandl->getList("WIKI", 1, 10);
 		$this->assertEquals(10, count($r->docs),
 			"TEST getList count");
+	}
+
+	private function _testGetMeta($force_curl=false) {
+		$quandl = new Quandl($this->api_key);
+		$quandl->force_curl = $quandl->no_ssl_verify = $force_curl;
+		$r = $quandl->getMeta("GOOG/NASDAQ_AAPL");
+		$this->assertEquals('NASDAQ_AAPL', $r->dataset->dataset_code, "TEST getMeta dataset_code");
+		$this->assertEquals('GOOG', $r->dataset->database_code, "TEST getMeta database_code");
 	}
 
 	private function _testGetSearch($force_curl=false) {
