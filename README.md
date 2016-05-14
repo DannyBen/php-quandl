@@ -5,10 +5,15 @@ PHP Quandl
 [![Build Status](https://img.shields.io/travis/DannyBen/php-quandl.svg?maxAge=2592000&style=flat-square)](https://travis-ci.org/DannyBen/php-quandl)
 [![Code Climate](https://img.shields.io/codeclimate/github/DannyBen/php-quandl.svg?maxAge=2592000&style=flat-square)](https://codeclimate.com/github/DannyBen/php-quandl)
 
-This library provides easy access to the 
-[Quandl API](https://www.quandl.com/help/api) 
-using PHP.
+---
 
+This library provides easy access to the [Quandl API][1] using PHP.
+
+It provides several convenience methods to common Quandl API endpoints, as
+well as a generic method to access any of Quandl's endpoints directly.
+
+
+---
 
 Geting Started
 --------------
@@ -64,6 +69,13 @@ supported symbols in a data source:
 $quandl = new Quandl($api_key);
 $data = $quandl->getSearch("crude oil");
 $data = $quandl->getList("WIKI", 1, 10);
+```
+
+To access any Quandl API endpoint directly, use the `get` method
+
+```php
+$quandl = new Quandl($api_key);
+$data = $quandl->get("databases/WIKI");
 ```
 
 More examples can be found in the [examples.php](https://github.com/DannyBen/php-quandl/blob/master/examples.php) file 
@@ -177,6 +189,23 @@ response came from the cache.
 
 ### Methods
 
+#### `get`
+
+```php
+mixed get( string $path [, array $params ] )
+```
+
+Returns an object containing the response from any of Quandl's API
+endpoints. The format of the result depends on the value of 
+`$quandl->format`.
+
+The optional parameters array is an associative `key => value`
+array with any of the parameters supported by Quandl.
+
+You do not need to pass `auth_token` in the array, it will be 
+automatically appended.
+
+
 #### `getSymbol`
 
 ```php
@@ -234,3 +263,6 @@ mixed getDatabases( [int $page, int $per_page] )
 
 Returns a list of available databases. Number of results per page is 
 limited to 100 by default.
+
+
+[1]: https://www.quandl.com/help/api

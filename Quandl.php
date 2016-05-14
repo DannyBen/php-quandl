@@ -16,6 +16,7 @@ class Quandl {
 	public $error;
 
 	private static $url_templates = [
+		"direct"  => 'https://www.quandl.com/api/v3/%s.%s?%s',
 		"symbol"  => 'https://www.quandl.com/api/v3/datasets/%s.%s?%s',
 		"search"  => 'https://www.quandl.com/api/v3/datasets.%s?%s',
 		"list"    => 'https://www.quandl.com/api/v3/datasets.%s?%s',
@@ -28,6 +29,15 @@ class Quandl {
 	public function __construct($api_key=null, $format="object") {
 		$this->api_key = $api_key;
 		$this->format = $format;
+	}
+
+	// get provides access to any Quandl API endpoint. There is no need
+	// to include the format.
+	public function get($path, $params=null) {
+		$url = $this->getUrl("direct", $path, $this->getFormat(), 
+			$this->arrangeParams($params));
+
+		return $this->getData($url);
 	}
 
 	// getSymbol returns data for a given symbol.
