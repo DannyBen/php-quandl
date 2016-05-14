@@ -1,9 +1,9 @@
 PHP Quandl
 ==========
 
-[![Packagist](https://img.shields.io/packagist/v/dannyben/php-quandl.svg?maxAge=2592000&style=flat-square)](https://packagist.org/packages/dannyben/php-quandl)
-[![Build Status](https://img.shields.io/travis/DannyBen/php-quandl.svg?maxAge=2592000&style=flat-square)](https://travis-ci.org/DannyBen/php-quandl)
-[![Code Climate](https://img.shields.io/codeclimate/github/DannyBen/php-quandl.svg?maxAge=2592000&style=flat-square)](https://codeclimate.com/github/DannyBen/php-quandl)
+[![Packagist](https://img.shields.io/packagist/v/dannyben/php-quandl.svg?maxAge=14400&style=flat-square)](https://packagist.org/packages/dannyben/php-quandl)
+[![Build Status](https://img.shields.io/travis/DannyBen/php-quandl.svg?maxAge=14400&style=flat-square)](https://travis-ci.org/DannyBen/php-quandl)
+[![Code Climate](https://img.shields.io/codeclimate/github/DannyBen/php-quandl.svg?maxAge=14400&style=flat-square)](https://codeclimate.com/github/DannyBen/php-quandl)
 
 ---
 
