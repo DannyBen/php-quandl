@@ -193,6 +193,10 @@ response came from the cache.
 
 ```php
 mixed get( string $path [, array $params ] )
+
+// Examples
+$data = $quandl->get( 'datasets/EOD/QQQ' );
+$data = $quandl->get( 'datasets/EOD/QQQ', ['rows' => 5] );
 ```
 
 Returns an object containing the response from any of Quandl's API
@@ -210,6 +214,10 @@ automatically appended.
 
 ```php
 mixed getSymbol( string $symbol [, array $params ] )
+
+// Examples
+$data = $quandl->getSymbol( 'WIKI/AAPL' );
+$data = $quandl->getSymbol( 'WIKI/AAPL', ['rows' => 5] );
 ```
 
 Returns an object containing data for a given symbol. The format
@@ -226,6 +234,10 @@ automatically appended.
 
 ```php
 mixed getSearch( string $query [, int $page, int $per_page] )
+
+// Examples
+$data = $quandl->getSearch( "gold" );
+$data = $quandl->getSearch( "gold", 1, 10 );
 ```
 
 Returns a search result object. Number of results per page is 
@@ -240,6 +252,10 @@ string instead.
 
 ```php
 mixed getList( string $source [, int $page, int $per_page] )
+
+// Examples
+$data = $quandl->getList( 'WIKI' );
+$data = $quandl->getList( 'WIKI', 1, 10 );
 ```
 
 Returns a list of symbols in a given source. Number of results per page is 
@@ -250,6 +266,9 @@ limited to 300 by default.
 
 ```php
 mixed getMeta( string $source )
+
+// Example
+$data = $quandl->getMeta( 'WIKI' );
 ```
 
 Returns metadata about a symbol.
@@ -259,10 +278,32 @@ Returns metadata about a symbol.
 
 ```php
 mixed getDatabases( [int $page, int $per_page] )
+
+// Examples
+$data = $quandl->getDatabases();
+$data = $quandl->getDatabases( 1, 10 );
 ```
 
 Returns a list of available databases. Number of results per page is 
 limited to 100 by default.
+
+
+#### `getBulk`
+
+> This feature is only supported with premium databases.
+
+```php
+boolean getBulk( string $database, string $path [, boolean $complete] )
+
+// Examples
+boolean getBulk( 'EOD', 'eod-partial.zip' );
+boolean getBulk( 'EOD', 'eod-full.zip', true );
+```
+
+Downloads the entire database and saves it to a ZIP file. If `$complete` 
+is true (false by default), it will download the entire database, otherwise,
+it will download the last day only.
+
 
 
 [1]: https://www.quandl.com/help/api

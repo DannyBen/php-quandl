@@ -11,10 +11,14 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 	private $symbols    = ["WIKI/CSCO", "WIKI/AAPL"];
 	private $dates      = ["trim_start" => "2014-01-01", "trim_end" => "2014-02-02"];
 	private $cache_file = false;
+	private $premium_database = null;
 
 	protected function setup() {
 		if (getenv('QUANDL_KEY')) {
 			$this->api_key = getenv('QUANDL_KEY');
+		}
+		if (getenv('QUANDL_PREMIUM')) {
+			$this->premium_database = getenv('QUANDL_PREMIUM');
 		}
 	}
 
@@ -26,8 +30,8 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 		$quandl = new Quandl($this->api_key);
 		$r = $quandl->get("datasets/GOOG/NASDAQ_AAPL", ['rows' => 5]);
 
-		$this->assertEquals('GOOG', $r->dataset->database_code, "TEST get database_code");
-		$this->assertEquals(5, count($r->dataset->data), "TEST get data count");
+		$this->assertEquals('GOOG', $r->dataset->database_code);
+		$this->assertEquals(5, count($r->dataset->data));
 	}
 
 	public function testCsv() {
@@ -50,36 +54,44 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 		$this->_testGetSymbol("csv", 2800, true);
 	}
 
+	public function testBulk() {
+		$this->_testBulk();
+	}
+	
+	public function testBulkWithCurl() {
+		$this->_testBulk(true);
+	}
+
 	public function testInvalidUrl() {
 		$quandl = new Quandl($this->api_key, "json");
 		$r = $quandl->getSymbol("INVALID/SYMBOL", $this->dates);
-		$this->assertEquals($quandl->error, "Invalid URL", "TEST invalidUrl response");
+		$this->assertEquals($quandl->error, "Invalid URL");
 	}
 
 	public function testGetList() {
 		$quandl = new Quandl($this->api_key);
 		$r = $quandl->getList("WIKI", 1, 10);
-		$this->assertEquals(10, count($r->datasets), "TEST getList count");
+		$this->assertEquals(10, count($r->datasets));
 	}
 
 	public function testGetSearch() {
 		$quandl = new Quandl($this->api_key);
 		$r = $quandl->getSearch("crud oil", 1, 10);
-		$this->assertEquals(10, count($r->datasets), "TEST getSearch count");
+		$this->assertEquals(10, count($r->datasets));
 	}
 
 	public function testGetMeta() {
 		$quandl = new Quandl($this->api_key);
 		$r = $quandl->getMeta("GOOG/NASDAQ_AAPL");
-		$this->assertEquals('NASDAQ_AAPL', $r->dataset->dataset_code, "TEST getMeta dataset_code");
-		$this->assertEquals('GOOG', $r->dataset->database_code, "TEST getMeta database_code");
+		$this->assertEquals('NASDAQ_AAPL', $r->dataset->dataset_code);
+		$this->assertEquals('GOOG', $r->dataset->database_code);
 	}
 
 	public function testGetDatabases() {
 		$quandl = new Quandl($this->api_key);
 		$r = $quandl->getDatabases(1, 5);
-		$this->assertEquals(5, count($r->databases), "TEST getDatabases count");
-		$this->assertTrue(array_key_exists('database_code', $r->databases[0]), "TEST getDatabases keys");
+		$this->assertEquals(5, count($r->databases));
+		$this->assertTrue(array_key_exists('database_code', $r->databases[0]));
 	}
 
 	public function testCache() {
@@ -87,15 +99,12 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 		$quandl->cache_handler = array($this, "cacheHandler");
 		$r = $quandl->getSymbol($this->symbol, $this->dates);
 		$count = count($r->dataset->data);
-		$this->assertFalse($quandl->was_cached, 
-			"TEST was_cache should be false");
+		$this->assertFalse($quandl->was_cached);
 
 		$r = $quandl->getSymbol($this->symbol, $this->dates);
-		$this->assertEquals($count, count($r->dataset->data), 
-			"TEST count before and after cache should match");
+		$this->assertEquals($count, count($r->dataset->data));
 
-		$this->assertTrue($quandl->was_cached, 
-			"TEST was_cache should be true");
+		$this->assertTrue($quandl->was_cached);
 	}
 
 	// ---
@@ -124,15 +133,31 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 			$quandl_format = "json";
 		}
 
-		$this->assertGreaterThan(
-			$length,
-			strlen($r), 
-			"TEST $format length");
+		$this->assertGreaterThan($length, strlen($r), "Length is shorter ($format)");
 		
 		$this->assertEquals(
 			"https://www.quandl.com/api/v3/datasets/{$this->symbol}.{$quandl_format}?trim_start={$this->dates['trim_start']}&trim_end={$this->dates['trim_end']}&auth_token={$this->api_key}",
-			$quandl->last_url,
-			"TEST $format url");
+			$quandl->last_url, "URL Mismatch ($format)");
+	}
+
+	private function _testBulk($force_curl=false) {
+		if (!$this->premium_database) {
+      $this->markTestSkipped('Premium database is not available. Use QUANDL_PREMIUM environment variable to set a database for testing');
+      return;
+    }
+
+		$quandl = new Quandl($this->api_key);
+		$quandl->force_curl = $quandl->no_ssl_verify = $force_curl;
+
+		$filename = "tmp.zip";
+
+		@unlink($filename);
+		$this->assertFileNotExists($filename);
+
+		$r = $quandl->getBulk($this->premium_database, $filename);
+
+		$this->assertFileExists($filename);
+		$this->assertGreaterThan(100000, filesize($filename));
 	}
 
 }

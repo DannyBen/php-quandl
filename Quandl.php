@@ -22,6 +22,7 @@ class Quandl {
 		"list"    => 'https://www.quandl.com/api/v3/datasets.%s?%s',
 		"meta"    => 'https://www.quandl.com/api/v3/datasets/%s/metadata.%s',
 		"dbs"     => 'https://www.quandl.com/api/v3/databases.%s?%s',
+		"bulk"    => 'https://www.quandl.com/api/v3/databases/%s/data?%s',
 	];
 
 	// --- API Methods
@@ -42,10 +43,16 @@ class Quandl {
 
 	// getSymbol returns data for a given symbol.
 	public function getSymbol($symbol, $params=null) {
-		$url = $this->getUrl("symbol", $symbol, $this->getFormat(), 
-			$this->arrangeParams($params));
-
+		$url = $this->getUrl("symbol", $symbol, $this->getFormat(), $this->arrangeParams($params));
 		return $this->getData($url);
+	}
+
+	// getBulk downloads an entire database to a ZIP file.
+	public function getBulk($database, $filename, $complete=false) {
+		$params = [];
+		$params['download_type'] = $complete ? 'complete' : 'partial';
+		$url = $this->getUrl("bulk", $database, $this->arrangeParams($params));
+		return $this->downloadToFile($url, $filename);
 	}
 
 	// getMeta returns metadata for a given symbol.
@@ -185,18 +192,42 @@ class Quandl {
 	// You can disable SSL verification for curl by setting 
 	// $no_ssl_verify to true (solves "SSL certificate problem")
 	private function download($url) {
-		if (ini_get('allow_url_fopen') and !$this->force_curl) {
-			return $this->simpleDownload($url);
-		}
+		$mode = $this->downloadMode();
+		
+		if ($mode == 'simple') return $this->simpleDownload($url);
+		if ($mode == 'curl')   return $this->curlDownload($url);
 
-		if (function_exists('curl_version')) {
-			return $this->curlDownload($url);
-		}
-
-		$this->error = "Enable allow_url_fopen or curl";
+		$this->error = "Cannot download. Please enable allow_url_fopen or curl.";
 		return false;
 	}
 
+	// downloadToFile fetches $url with file_get_contents or curl fallback
+	// You can force curl download by setting $force_curl to true.
+	// You can disable SSL verification for curl by setting 
+	// $no_ssl_verify to true (solves "SSL certificate problem")
+	private function downloadToFile($url, $path) {
+		$mode = $this->downloadMode();
+		
+		if ($mode == 'simple') return $this->simpleDownloadFile($url, $path);
+		if ($mode == 'curl')   return $this->curlDownloadFile($url, $path);
+
+		$this->error = "Cannot download. Please enable allow_url_fopen or curl.";
+		return false;
+	}
+
+	// downloadMode determines if we can download with 
+	// file_get_contents/fopen or curl.
+	private function downloadMode() {
+		if (ini_get('allow_url_fopen') and !$this->force_curl)
+			return 'simple';
+
+		if (function_exists('curl_version'))
+			return 'curl';
+
+		return 'unknown';
+	}
+
+	// simpleDownload gets a URL using file_get_contents and returns its content
 	private function simpleDownload($url) {
 		// Set timeout, doesnt seem to work with ini_set
 		// $this->timeout and ini_set('default_socket_timeout', $this->timeout);
@@ -212,26 +243,73 @@ class Quandl {
 		return $data;
 	}
 
+	// simpleDownloadFile downloads a file with fopen and saves the content to 
+	// disk.
+	private function simpleDownloadFile($url, $path) {
+		if ($this->timeout) {
+			$context = stream_context_create( ['http' => ['timeout' => $this->timeout]] );
+			$success = @file_put_contents($path, fopen($url, 'r', false, $context));
+		}
+		else {
+			$success = @file_put_contents($path, fopen($url, 'r'));
+		}
+
+		$success or $this->error = ($this->timeout ? "Invalid URL or timed out" : "Invalid URL");
+		return $success;
+	}
+
+	// curlDownload is the curl equivalent of simpleDownload. 
 	private function curlDownload($url) {
+		$options = [
+			CURLOPT_URL => $url,
+			CURLOPT_RETURNTRANSFER => true
+		];
+
+		return $this->curlExecute($options);
+	}
+
+	// curlDownloadFile is the curl equivalent of simpleDownloadFile.
+	private function curlDownloadFile($url, $path) {
+		$fp = fopen($path, 'w+');
+
+		$options = [
+			CURLOPT_URL => $url,
+			CURLOPT_FILE => $fp,
+			CURLOPT_FOLLOWLOCATION => true
+		];
+
+		$response = $this->curlExecute($options);
+		
+		fclose($fp);
+
+		return $response;
+	}
+
+	// curlExecute handles generic curl execution, for DRYing the two other
+	// functions that rely on curl.
+	private function curlExecute($options) {
 		$curl = curl_init();
 
-		curl_setopt($curl, CURLOPT_URL, $url);
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt_array($curl, $options);
+
 		$this->timeout       and curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
 		$this->no_ssl_verify and curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
 
-		$data  = curl_exec($curl);
+		$response = curl_exec($curl);
 		$error = curl_error($curl);
 		$http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+		
 		curl_close($curl);
+
 		if ($http_code == "404") {
-			$data = false;
+			$response = false;
 			$this->error = "Invalid URL";
 		}
 		else if ($error) {
-			$data = false;
+			$response = false;
 			$this->error = $error;
 		}
-		return $data;
+
+		return $response;
 	}
 }
