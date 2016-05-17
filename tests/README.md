@@ -40,7 +40,7 @@ database you are subscribed to, prior to running the tests. For example:
 Travis
 --------------------------------------------------
 
-If many tests are run through Travis CI, they will eventually fail due to 
-Quandl key-less API quota. You can define the `QUANDL_KEY` environmnt 
+If many tests are executed through Travis CI, they will eventually fail due 
+to Quandl key-less API quota. You can define the `QUANDL_KEY` environmnt 
 variable in the travis repo settings.
 
