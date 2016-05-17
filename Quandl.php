@@ -246,8 +246,14 @@ class Quandl {
 	// simpleDownloadFile downloads a file with fopen and saves the content to 
 	// disk.
 	private function simpleDownloadFile($url, $path) {
-		$bytes_written = file_put_contents($path, fopen($url, 'r'));
-		$success = $bytes_written !== false;
+		if ($this->timeout) {
+			$context = stream_context_create( ['http' => ['timeout' => $this->timeout]] );
+			$success = @file_put_contents($path, fopen($url, 'r', false, $context));
+		}
+		else {
+			$success = @file_put_contents($path, fopen($url, 'r'));
+		}
+
 		$success or $this->error = ($this->timeout ? "Invalid URL or timed out" : "Invalid URL");
 		return $success;
 	}
