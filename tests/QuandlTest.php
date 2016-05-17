@@ -11,10 +11,14 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 	private $symbols    = ["WIKI/CSCO", "WIKI/AAPL"];
 	private $dates      = ["trim_start" => "2014-01-01", "trim_end" => "2014-02-02"];
 	private $cache_file = false;
+	private $premium_database = null;
 
 	protected function setup() {
 		if (getenv('QUANDL_KEY')) {
 			$this->api_key = getenv('QUANDL_KEY');
+		}
+		if (getenv('QUANDL_PREMIUM')) {
+			$this->premium_database = getenv('QUANDL_PREMIUM');
 		}
 	}
 
@@ -48,6 +52,14 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 
 	public function testCurl() {
 		$this->_testGetSymbol("csv", 2800, true);
+	}
+
+	public function testBulk() {
+		$this->_testBulk();
+	}
+	
+	public function testBulkWithCurl() {
+		$this->_testBulk(true);
 	}
 
 	public function testInvalidUrl() {
@@ -124,15 +136,31 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 			$quandl_format = "json";
 		}
 
-		$this->assertGreaterThan(
-			$length,
-			strlen($r), 
-			"TEST $format length");
+		$this->assertGreaterThan($length, strlen($r), "TEST $format length");
 		
 		$this->assertEquals(
 			"https://www.quandl.com/api/v3/datasets/{$this->symbol}.{$quandl_format}?trim_start={$this->dates['trim_start']}&trim_end={$this->dates['trim_end']}&auth_token={$this->api_key}",
-			$quandl->last_url,
-			"TEST $format url");
+			$quandl->last_url, "TEST $format url");
+	}
+
+	private function _testBulk($force_curl=false) {
+		if (!$this->premium_database) {
+      $this->markTestSkipped('Premium database is not available. Use QUANDL_PREMIUM environment variable to set a database for testing');
+      return;
+    }
+
+		$quandl = new Quandl($this->api_key);
+		$quandl->force_curl = $quandl->no_ssl_verify = $force_curl;
+
+		$filename = "tmp.zip";
+
+		@unlink($filename);
+		$this->assertFileNotExists($filename);
+
+		$r = $quandl->getBulk($this->premium_database, $filename);
+
+		$this->assertFileExists($filename);
+		$this->assertGreaterThan(100000, filesize($filename));
 	}
 
 }
