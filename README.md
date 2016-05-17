@@ -216,8 +216,8 @@ automatically appended.
 mixed getSymbol( string $symbol [, array $params ] )
 
 // Examples
-$data = $quandl->getSymbol( 'WIKI/AAPL' )
-$data = $quandl->getSymbol( 'WIKI/AAPL', ['rows' => 5] )
+$data = $quandl->getSymbol( 'WIKI/AAPL' );
+$data = $quandl->getSymbol( 'WIKI/AAPL', ['rows' => 5] );
 ```
 
 Returns an object containing data for a given symbol. The format
@@ -236,8 +236,8 @@ automatically appended.
 mixed getSearch( string $query [, int $page, int $per_page] )
 
 // Examples
-$data = $quandl->getSearch( "gold" )
-$data = $quandl->getSearch( "gold", 1, 10 )
+$data = $quandl->getSearch( "gold" );
+$data = $quandl->getSearch( "gold", 1, 10 );
 ```
 
 Returns a search result object. Number of results per page is 
@@ -254,8 +254,8 @@ string instead.
 mixed getList( string $source [, int $page, int $per_page] )
 
 // Examples
-$data = $quandl->getList( 'WIKI' )
-$data = $quandl->getList( 'WIKI', 1, 10 )
+$data = $quandl->getList( 'WIKI' );
+$data = $quandl->getList( 'WIKI', 1, 10 );
 ```
 
 Returns a list of symbols in a given source. Number of results per page is 
@@ -268,7 +268,7 @@ limited to 300 by default.
 mixed getMeta( string $source )
 
 // Example
-$data = $quandl->getMeta( 'WIKI' )
+$data = $quandl->getMeta( 'WIKI' );
 ```
 
 Returns metadata about a symbol.
@@ -280,8 +280,8 @@ Returns metadata about a symbol.
 mixed getDatabases( [int $page, int $per_page] )
 
 // Examples
-$data = $quandl->getDatabases()
-$data = $quandl->getDatabases( 1, 10 )
+$data = $quandl->getDatabases();
+$data = $quandl->getDatabases( 1, 10 );
 ```
 
 Returns a list of available databases. Number of results per page is 
@@ -296,8 +296,8 @@ limited to 100 by default.
 boolean getBulk( string $database, string $path [, boolean $complete] )
 
 // Examples
-boolean getBulk( 'EOD', 'eod-partial.zip' )
-boolean getBulk( 'EOD', 'eod-full.zip', true )
+boolean getBulk( 'EOD', 'eod-partial.zip' );
+boolean getBulk( 'EOD', 'eod-full.zip', true );
 ```
 
 Downloads the entire database and saves it to a ZIP file. If `$complete` 
