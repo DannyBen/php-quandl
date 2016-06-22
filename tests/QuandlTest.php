@@ -20,6 +20,14 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 		if (getenv('QUANDL_PREMIUM')) {
 			$this->premium_database = getenv('QUANDL_PREMIUM');
 		}
+		if (!ini_get('allow_url_fopen')) {
+			print("Aborted.\nThe tests require 'allow_url_fopen'.\nSet it in your php.ini.");
+			exit(1);
+		}
+		if (!function_exists('curl_version')) {
+			print("Aborted.\nThe tests require curl and PHP curl.\nMake sure it is installed and configured.");
+			exit(1);
+		}
 	}
 
 	protected function tearDown() {
@@ -72,6 +80,7 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 		$quandl = new Quandl($this->api_key);
 		$r = $quandl->getList("WIKI", 1, 10);
 		$this->assertEquals(10, count($r->datasets));
+		$this->assertEquals("WIKI", $r->datasets[0]->database_code);
 	}
 
 	public function testGetSearch() {
@@ -134,7 +143,7 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 		}
 
 		$this->assertGreaterThan($length, strlen($r), "Length is shorter ($format)");
-		
+
 		$this->assertEquals(
 			"https://www.quandl.com/api/v3/datasets/{$this->symbol}.{$quandl_format}?trim_start={$this->dates['trim_start']}&trim_end={$this->dates['trim_end']}&auth_token={$this->api_key}",
 			$quandl->last_url, "URL Mismatch ($format)");
