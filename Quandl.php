@@ -92,10 +92,10 @@ class Quandl {
 	// getList returns the list of symbols for a given source.
 	public function getList($source, $page=1, $per_page=300) {
 		$params = [
-			"query"       => "*",
-			"source_code" => $source, 
-			"per_page"    => $per_page, 
-			"page"        => $page, 
+			"query"         => "*",
+			"database_code" => $source, 
+			"per_page"      => $per_page, 
+			"page"          => $page, 
 		];
 		$url = $this->getUrl("list", $this->getFormat(), 
 			$this->arrangeParams($params));
