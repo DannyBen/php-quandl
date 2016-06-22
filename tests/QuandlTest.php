@@ -151,9 +151,9 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 
 	private function _testBulk($force_curl=false) {
 		if (!$this->premium_database) {
-      $this->markTestSkipped('Premium database is not available. Use QUANDL_PREMIUM environment variable to set a database for testing');
-      return;
-    }
+			$this->markTestSkipped('Premium database is not available. Use QUANDL_PREMIUM environment variable to set a database for testing');
+			return;
+		}
 
 		$quandl = new Quandl($this->api_key);
 		$quandl->force_curl = $quandl->no_ssl_verify = $force_curl;
