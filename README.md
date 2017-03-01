@@ -45,9 +45,8 @@ documentation:
 $quandl = new Quandl($api_key);
 $data = $quandl->getSymbol($symbol, [
 	"sort_order"      => "desc",
-	"exclude_headers" => true,
 	"rows"            => 10,
-	"column"          => 4, 
+	"column_index"    => 4, 
 ]);
 ```
 
