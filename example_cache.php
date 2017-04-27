@@ -8,7 +8,7 @@
 
 	$quandl = new Quandl($api_key, "csv");
 	$quandl->cache_handler = 'cacheHandler';
-	$data = $quandl->getSymbol("GOOG/NASDAQ_AAPL");
+	$data = $quandl->getSymbol("WIKI/AAPL");
 	
 	// A simple example of a cache handler.
 	// This function will be called by the Quandl class.

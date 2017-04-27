@@ -36,9 +36,9 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 
 	public function testGet() {
 		$quandl = new Quandl($this->api_key);
-		$r = $quandl->get("datasets/GOOG/NASDAQ_AAPL", ['rows' => 5]);
+		$r = $quandl->get("datasets/WIKI/AAPL", ['rows' => 5]);
 
-		$this->assertEquals('GOOG', $r->dataset->database_code);
+		$this->assertEquals('WIKI', $r->dataset->database_code);
 		$this->assertEquals(5, count($r->dataset->data));
 	}
 
@@ -91,9 +91,9 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 
 	public function testGetMeta() {
 		$quandl = new Quandl($this->api_key);
-		$r = $quandl->getMeta("GOOG/NASDAQ_AAPL");
-		$this->assertEquals('NASDAQ_AAPL', $r->dataset->dataset_code);
-		$this->assertEquals('GOOG', $r->dataset->database_code);
+		$r = $quandl->getMeta("WIKI/AAPL");
+		$this->assertEquals('AAPL', $r->dataset->dataset_code);
+		$this->assertEquals('WIKI', $r->dataset->database_code);
 	}
 
 	public function testGetDatabases() {

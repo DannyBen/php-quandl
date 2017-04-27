@@ -5,7 +5,7 @@
 	require_once "Quandl.php";
 
 	$api_key = $_SERVER['QUANDL_KEY'] ?: "YOUR_KEY_HERE";
-	$symbol  = "GOOG/NASDAQ_AAPL";
+	$symbol  = "WIKI/AAPL";
 
 	// Modify this call to any `exampleN` to check different samples
 	$data = example10($api_key, $symbol);

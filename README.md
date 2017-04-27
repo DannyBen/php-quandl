@@ -35,7 +35,7 @@ data for AAPL:
 ```php
 $api_key = "YOUR_KEY_HERE";
 $quandl = new Quandl($api_key);
-$data = $quandl->getSymbol("GOOG/NASDAQ_AAPL");
+$data = $quandl->getSymbol("WIKI/AAPL");
 ```
 
 You may pass any parameter that is mentioned in the Quandl
