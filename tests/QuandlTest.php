@@ -3,7 +3,10 @@
 // Tests: Quandl
 //--------------------------------------------------------------
 require_once __DIR__ . "/../Quandl.php";
-require_once 'PHPUnit/Autoload.php';
+
+if (!class_exists("PHPUnit_Framework_TestCase")) {
+	class PHPUnit_Framework_TestCase extends PHPUnit\Framework\TestCase {}
+}
 
 class QuandlTest extends PHPUnit_Framework_TestCase {
 	private $api_key  = "DEBUG_KEY";
