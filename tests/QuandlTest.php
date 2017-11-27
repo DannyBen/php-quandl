@@ -4,6 +4,10 @@
 //--------------------------------------------------------------
 require_once __DIR__ . "/../Quandl.php";
 
+if (!class_exists("PHPUnit_Framework_TestCase")) {
+	class PHPUnit_Framework_TestCase extends PHPUnit\Framework\TestCase {}
+}
+
 class QuandlTest extends PHPUnit_Framework_TestCase {
 	private $api_key  = "DEBUG_KEY";
 
@@ -166,7 +170,7 @@ class QuandlTest extends PHPUnit_Framework_TestCase {
 		$r = $quandl->getBulk($this->premium_database, $filename);
 
 		$this->assertFileExists($filename);
-		$this->assertGreaterThan(100000, filesize($filename));
+		$this->assertGreaterThan(800, filesize($filename));
 	}
 
 }
