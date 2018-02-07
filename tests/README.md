@@ -20,7 +20,7 @@ In this case, you can simply set your own key in an environment variable:
 
 To test a specific method:
 
-  $ phpunit --stop-on-failure --filter PartialMethodName .
+    $ phpunit --stop-on-failure --filter PartialMethodName .
 
 
 Testing Bulk Downloads with a Premium Database
