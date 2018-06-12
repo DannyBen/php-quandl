@@ -1,11 +1,9 @@
 PHP Quandl
 ==========
 
-[![Packagist](https://img.shields.io/packagist/v/dannyben/php-quandl.svg?maxAge=14400&style=flat-square)](https://packagist.org/packages/dannyben/php-quandl)
-[![Build Status](https://img.shields.io/travis/DannyBen/php-quandl.svg?maxAge=14400&style=flat-square)](https://travis-ci.org/DannyBen/php-quandl)
-[![Maintainability](https://img.shields.io/codeclimate/maintainability/DannyBen/php-quandl.svg?style=flat-square)](https://codeclimate.com/github/DannyBen/php-quandl)
-[![Issues](https://img.shields.io/codeclimate/issues/github/DannyBen/php-quandl.svg?style=flat-square)](https://codeclimate.com/github/DannyBen/php-quandl)
-
+[![Latest Stable Version](https://poser.pugx.org/dannyben/php-quandl/v/stable)](https://packagist.org/packages/dannyben/php-quandl)
+[![Build Status](https://travis-ci.com/DannyBen/php-quandl.svg?branch=master)](https://travis-ci.com/DannyBen/php-quandl)
+[![Maintainability](https://api.codeclimate.com/v1/badges/3fcbce3c55d20f908c8e/maintainability)](https://codeclimate.com/github/DannyBen/php-quandl/maintainability)
 
 ---
 
